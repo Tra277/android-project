@@ -2,6 +2,7 @@ package com.example.androidproject.activity;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,7 +14,7 @@ import com.example.androidproject.R;
 import com.example.androidproject.db.DatabaseHelper;
 
 public class MainActivity extends AppCompatActivity {
-
+    ImageView imageView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,5 +27,18 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        imageView = findViewById(R.id.imageView);
+        String imageName = "truy_kich";
+
+// Get the resource ID dynamically
+        int resId = getResources().getIdentifier(imageName, "drawable", getPackageName());
+
+// Check if it exists
+        if (resId != 0) {
+            imageView.setImageResource(resId);
+        } else {
+//            // Handle missing image (fallback or error)
+//            imageView.setImageResource(R.drawable.placeholder);
+        }
     }
 }
