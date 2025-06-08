@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base button style -->
+    <style name="CustomButton.Base" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:padding">20dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:width">190dp</item>
+        <item name="android:height">190dp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:backgroundTint">#2196F3</item> <!-- default: Blue -->
+        <item name="cornerRadius">12dp</item>
+    </style>
+
+    <!-- Orange button -->
+    <style name="CustomButton.Orange" parent="CustomButton.Base">
+        <item name="android:backgroundTint">#FF9800</item>
+    </style>
+
+    <!-- Red button -->
+    <style name="CustomButton.Red" parent="CustomButton.Base">
+        <item name="android:backgroundTint">#F44336</item>
+    </style>
+
+    <!-- Green button -->
+    <style name="CustomButton.Green" parent="CustomButton.Base">
+        <item name="android:backgroundTint">#4CAF50</item>
+    </style>
+
+    <!-- Gray button -->
+    <style name="CustomButton.Gray" parent="CustomButton.Base">
+        <item name="android:backgroundTint">#9E9E9E</item>
+    </style>
+
+    <!-- Blue button -->
+    <style name="CustomButton.Blue" parent="CustomButton.Base">
+        <item name="android:backgroundTint">#2196F3</item>
+    </style>
+
+    <!-- Purple button -->
+    <style name="CustomButton.Purple" parent="CustomButton.Base">
+        <item name="android:backgroundTint">#9C27B0</item>
+    </style>
+</resources>

@@ -2,6 +2,10 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.AndroidProject" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorSecondary">@color/teal_200</item>
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
