@@ -1,7 +1,9 @@
 package com.example.androidproject.activity;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
@@ -16,6 +18,7 @@ import com.example.androidproject.db.DatabaseHelper;
 
 public class MainActivity extends AppCompatActivity {
     ImageView imageView;
+    Button btnRandomExam;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        dbHelper.populateInitialData();
+        btnRandomExam = findViewById(R.id.btnRandomExam);
 //        imageView = findViewById(R.id.imageView);
 //        String imageName = "truy_kich";
 //
@@ -44,5 +49,9 @@ public class MainActivity extends AppCompatActivity {
 ////            // Handle missing image (fallback or error)
 ////            imageView.setImageResource(R.drawable.placeholder);
 //        }
+        btnRandomExam.setOnClickListener(v -> {
+           Intent intent = new Intent(MainActivity.this, QuizActivity.class);
+           startActivity(intent);
+        });
     }
 }
