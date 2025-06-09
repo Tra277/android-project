@@ -12,7 +12,7 @@
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/purple_700"
+        android:background="@color/purple_500"
         android:title="Ôn thi GPLX"
         android:titleTextColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
@@ -24,30 +24,36 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/topAppBar"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@id/topAppBar">
 
 
         <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:shrinkColumns="*"
+            android:stretchColumns="*">
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="0dp"
+                android:layout_weight="1"
+
+                >
 
                 <com.google.android.material.button.MaterialButton
                     style="@style/CustomButton.Red"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:text="Đề ngẫu nhiên"
                     app:icon="@drawable/ic_random1"
                     app:iconGravity="top"
                     app:iconPadding="8dp"
-                    app:iconTint="@color/white"
                     app:iconSize="50dp"
-                    android:text="Đề ngẫu nhiên" />
+                    app:iconTint="@color/white" />
 
                 <com.google.android.material.button.MaterialButton
                     style="@style/CustomButton.Orange"
@@ -64,18 +70,19 @@
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="0dp"
+                android:layout_weight="1">
 
                 <com.google.android.material.button.MaterialButton
                     style="@style/CustomButton.Green"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:text="Xem câu bị sai"
                     app:icon="@drawable/ic_cau_sai"
                     app:iconGravity="top"
                     app:iconPadding="8dp"
-                    app:iconTint="@color/white"
                     app:iconSize="50dp"
-                    android:text="Xem câu bị sai" />
+                    app:iconTint="@color/white" />
 
                 <com.google.android.material.button.MaterialButton
                     style="@style/CustomButton.Gray"
@@ -91,18 +98,19 @@
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="0dp"
+                android:layout_weight="1">
 
                 <com.google.android.material.button.MaterialButton
                     style="@style/CustomButton.Blue"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:text="60 câu điểm liệt"
                     app:icon="@drawable/ic_diem_liet"
                     app:iconGravity="top"
                     app:iconPadding="8dp"
-                    app:iconTint="@color/white"
                     app:iconSize="50dp"
-                    android:text="60 câu điểm liệt" />
+                    app:iconTint="@color/white" />
 
                 <com.google.android.material.button.MaterialButton
                     style="@style/CustomButton.Purple"
