@@ -1,8 +1,12 @@
 package com.example.androidproject.activity;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.androidproject.R;
 import com.example.androidproject.db.DatabaseHelper;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     ImageView imageView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,26 +27,43 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Toolbar toolbar = findViewById(R.id.topAppBar);
         setSupportActionBar(toolbar);
+        toolbar.setTitle("600 câu hỏi ôn thi GPLX");
+        toolbar.setNavigationIcon(null); // ←
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        toolbar.inflateMenu(R.menu.top_app_bar_menu); // menu góc phải
+
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_settings) {
+                Intent intent = new Intent(MainActivity.this, LicenseActivity.class);
+                startActivity(intent);
+                Toast.makeText(this, "Menu được nhấn", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            return false;
         });
-//        imageView = findViewById(R.id.imageView);
-//        String imageName = "truy_kich";
-//
-//// Get the resource ID dynamically
-//        int resId = getResources().getIdentifier(imageName, "drawable", getPackageName());
-//
-//// Check if it exists
-//        if (resId != 0) {
-//            imageView.setImageResource(resId);
-//        } else {
-////            // Handle missing image (fallback or error)
-////            imageView.setImageResource(R.drawable.placeholder);
-//        }
+
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.top_app_bar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            // Xử lý khi nhấn vào menu cài đặt
+            // Ví dụ: Mở màn hình cài đặt
+            // Intent intent = new Intent(this, SettingsActivity.class);
+            // startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
