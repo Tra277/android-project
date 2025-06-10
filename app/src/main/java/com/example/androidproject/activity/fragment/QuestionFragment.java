@@ -31,14 +31,13 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class QuestionFragment extends Fragment {
-
     private static final String ARG_QUESTION_ID = "question_id";
     private QuestionDAO questionDAO;
     private AnswerDAO answerDAO;
     private Question question;
     private List<Answer> answers;
     private OnAnswerSubmittedListener listener;
-    RadioGroup rgAnswers;
+    private RadioGroup rgAnswers; // Field to store the programmatically created RadioGroup
 
     public static QuestionFragment newInstance(int questionId) {
         QuestionFragment fragment = new QuestionFragment();
@@ -56,7 +55,9 @@ public class QuestionFragment extends Fragment {
         int questionId = getArguments().getInt(ARG_QUESTION_ID);
         question = questionDAO.getQuestionById(questionId);
         answers = answerDAO.getAnswersByQuestionId(questionId);
-        // Set the listener
+        if (question == null) {
+            Log.e("QuestionFragment", "Question is null for ID: " + questionId);
+        }
         if (getActivity() instanceof OnAnswerSubmittedListener) {
             listener = (OnAnswerSubmittedListener) getActivity();
         }
@@ -65,17 +66,22 @@ public class QuestionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_question, container, false);
-        Log.e("QuestionContent", question.getContent());
+
         TextView tvQuestionContent = view.findViewById(R.id.tv_question_content);
         ImageView ivQuestionImage = view.findViewById(R.id.iv_question_image);
         FrameLayout llAnswersContainer = view.findViewById(R.id.ll_answers_container);
         Button btnSubmit = view.findViewById(R.id.btn_submit);
 
         // Set question content
-        tvQuestionContent.setText(question.getContent());
+        if (question != null && !question.getContent().isEmpty()) {
+            tvQuestionContent.setText(question.getContent());
+        } else {
+            tvQuestionContent.setText("No question available");
+            Log.e("QuestionContent", "Question content is empty or null");
+        }
 
         // Load question image if path exists
-        if (!question.getImagePath().isEmpty()) {
+        if (question != null && !question.getImagePath().isEmpty()) {
             ivQuestionImage.setVisibility(View.VISIBLE);
             try {
                 Glide.with(this)
@@ -83,43 +89,57 @@ public class QuestionFragment extends Fragment {
                         .into(ivQuestionImage);
             } catch (Exception e) {
                 ivQuestionImage.setVisibility(View.GONE);
-                e.printStackTrace();
+                Log.e("QuestionFragment", "Error loading question image: ", e);
             }
         }
+
+        // Clear any existing views in the container
         llAnswersContainer.removeAllViews();
 
-// Tạo RadioGroup
-        RadioGroup rgAnswers = new RadioGroup(requireContext());
+        // Create RadioGroup programmatically
+        rgAnswers = new RadioGroup(requireContext());
         rgAnswers.setOrientation(LinearLayout.VERTICAL);
+        rgAnswers.setPadding(8, 8, 8, 8);
 
+        // Add RadioButtons for each answer
         for (Answer answer : answers) {
             RadioButton radioButton = new RadioButton(requireContext());
             radioButton.setText(answer.getContent());
+            radioButton.setTag(answer.getId()); // Set tag to answer ID
             rgAnswers.addView(radioButton);
 
             if (!answer.getImagePath().isEmpty()) {
                 ImageView iv = new ImageView(requireContext());
-                // Load image with Glide
-                rgAnswers.addView(iv);
+                try {
+                    Glide.with(this)
+                            .load(getImageResource(answer.getImagePath()))
+                            .into(iv);
+                    rgAnswers.addView(iv);
+                } catch (Exception e) {
+                    Log.e("QuestionFragment", "Error loading answer image: ", e);
+                }
             }
         }
 
+        // Add RadioGroup to container
         llAnswersContainer.addView(rgAnswers);
+
+        // Set submit button listener
         btnSubmit.setOnClickListener(v -> {
             int checkedId = rgAnswers.getCheckedRadioButtonId();
             if (checkedId != -1) {
-                RadioButton selectedRadio = view.findViewById(checkedId);
-                int answerId = (int) selectedRadio.getTag();
+                RadioButton selectedRadio = rgAnswers.findViewById(checkedId);
+                Integer answerId = (Integer) selectedRadio.getTag();
                 Answer selectedAnswer = answers.stream()
                         .filter(a -> a.getId() == answerId)
                         .findFirst()
                         .orElse(null);
-                if (selectedAnswer != null) {
+                if (selectedAnswer != null && listener != null) {
                     String status = selectedAnswer.isCorrect() ? "correct" : "incorrect";
-                    if (listener != null) {
-                        listener.onAnswerSubmitted(question.getId(), status);
-                    }
+                    listener.onAnswerSubmitted(question.getId(), status);
                 }
+            } else {
+                Log.d("QuestionFragment", "No answer selected");
             }
         });
 
