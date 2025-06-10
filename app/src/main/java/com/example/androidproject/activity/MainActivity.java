@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        dbHelper.populateInitialData();
+        //dbHelper.populateInitialData();
         btnRandomExam = findViewById(R.id.btnRandomExam);
 //        imageView = findViewById(R.id.imageView);
 //        String imageName = "truy_kich";

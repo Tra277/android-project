@@ -17,6 +17,11 @@ public class Category {
         this.licenseId = licenseId;
     }
 
+    public Category(String name, String description, int licenseId) {
+        this.name = name;
+        this.description = description;
+        this.licenseId = licenseId;
+    }
     // Getters and Setters
     public int getId() {
         return id;

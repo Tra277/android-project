@@ -17,6 +17,12 @@ public class DrivingLicense {
         this.name = name;
     }
 
+    public DrivingLicense(String code, String description, String name) {
+        this.code = code;
+        this.description = description;
+        this.name = name;
+    }
+
     // Getters and Setters
     public int getId() {
         return id;

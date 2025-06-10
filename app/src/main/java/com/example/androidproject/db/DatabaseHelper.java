@@ -106,66 +106,66 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return -1; // Handle error case
     }
-    public void populateInitialData() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        if (DatabaseUtils.queryNumEntries(db, "DrivingLicense") == 0) {
-            // DAOs as before
-            DrivingLicenseDAO drivingLicenseDAO = new DrivingLicenseDAO(context);
-            CategoryDAO categoryDAO = new CategoryDAO(context);
-            QuestionDAO questionDAO = new QuestionDAO(context);
-            AnswerDAO answerDAO = new AnswerDAO(context);
-            ExamSetDAO examSetDAO = new ExamSetDAO(context);
-            ExamSetQuestionDAO examSetQuestionDAO = new ExamSetQuestionDAO(context);
-
-            // Insert initial DrivingLicense and Categories (as above)
-            long licenseA1Id = drivingLicenseDAO.insertDrivingLicense(new DrivingLicense(/*...*/));
-            long trafficRulesId = categoryDAO.insertCategory(new Category(/*...*/));
-            long roadSignsId = categoryDAO.insertCategory(new Category(/*...*/));
-            long safetyId = categoryDAO.insertCategory(new Category(/*...*/));
-
-            // Bulk questions data (example array)
-            String[][] questionsData = {
-                    {"What is the speed limit in a residential area?", "50 km/h", "true", "70 km/h", "false", "Traffic Rules", ""},
-                    {"What does a red traffic light mean?", "Stop", "true", "Go", "false", "Road Signs", "traffic_light_red"},
-                    {"When should you use a helmet?", "Always when riding", "true", "Only on highways", "false", "Safety", ""},
-                    {"What does a yellow traffic light mean?", "Prepare to stop", "true", "Speed up", "false", "Road Signs", "traffic_light_yellow"},
-                    {"What is the minimum following distance at 60 km/h?", "30 meters", "true", "15 meters", "false", "Traffic Rules", ""}
-                    // Add more rows for 325 questions
-            };
-
-            ExamSet examSet = new ExamSet("Đề 1",0,0);
-            long examSetId = examSetDAO.insertExamSet(examSet);
-
-            for (String[] data : questionsData) {
-                Question question = new Question();
-                question.setContent(data[0]);
-                question.setImagePath(data[5]); // Image path
-                question.setCriticalQuiz(true); // Adjust as needed
-                question.setConfusingQuiz(false); // Adjust as needed
-                question.setQuestionExplanation("Explanation for " + data[0]);
-                question.setQuestionStatus("not_yet_done");
-                question.setCategoryId(getCategoryIdByName(data[4], categoryDAO)); // Map category name to ID
-                long questionId = questionDAO.insertQuestion(question);
-
-                Answer answer1 = new Answer();
-                answer1.setCorrect(Boolean.parseBoolean(data[2]));
-                answer1.setContent(data[1]);
-                answer1.setImagePath("");
-                answer1.setQuestionId((int) questionId);
-                answerDAO.insertAnswer(answer1);
-
-                Answer answer2 = new Answer();
-                answer2.setCorrect(Boolean.parseBoolean(data[4]));
-                answer2.setContent(data[3]);
-                answer2.setImagePath("");
-                answer2.setQuestionId((int) questionId);
-                answerDAO.insertAnswer(answer2);
-
-                ExamSetQuestion eq = new ExamSetQuestion();
-                eq.setQuestionId((int) questionId);
-                eq.setExamSetId((int) examSetId);
-                examSetQuestionDAO.insertExamSetQuestion(eq);
-            }
-        }
-    }
+//    public void populateInitialData() {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        if (DatabaseUtils.queryNumEntries(db, "DrivingLicense") == 0) {
+//            // DAOs as before
+//            DrivingLicenseDAO drivingLicenseDAO = new DrivingLicenseDAO(context);
+//            CategoryDAO categoryDAO = new CategoryDAO(context);
+//            QuestionDAO questionDAO = new QuestionDAO(context);
+//            AnswerDAO answerDAO = new AnswerDAO(context);
+//            ExamSetDAO examSetDAO = new ExamSetDAO(context);
+//            ExamSetQuestionDAO examSetQuestionDAO = new ExamSetQuestionDAO(context);
+//
+//            // Insert initial DrivingLicense and Categories (as above)
+//            long licenseA1Id = drivingLicenseDAO.insertDrivingLicense(new DrivingLicense(/*...*/));
+//            long trafficRulesId = categoryDAO.insertCategory(new Category(/*...*/));
+//            long roadSignsId = categoryDAO.insertCategory(new Category(/*...*/));
+//            long safetyId = categoryDAO.insertCategory(new Category(/*...*/));
+//
+//            // Bulk questions data (example array)
+//            String[][] questionsData = {
+//                    {"What is the speed limit in a residential area?", "50 km/h", "true", "70 km/h", "false", "Traffic Rules", ""},
+//                    {"What does a red traffic light mean?", "Stop", "true", "Go", "false", "Road Signs", "traffic_light_red"},
+//                    {"When should you use a helmet?", "Always when riding", "true", "Only on highways", "false", "Safety", ""},
+//                    {"What does a yellow traffic light mean?", "Prepare to stop", "true", "Speed up", "false", "Road Signs", "traffic_light_yellow"},
+//                    {"What is the minimum following distance at 60 km/h?", "30 meters", "true", "15 meters", "false", "Traffic Rules", ""}
+//                    // Add more rows for 325 questions
+//            };
+//
+//            ExamSet examSet = new ExamSet("Đề 1",0,0);
+//            long examSetId = examSetDAO.insertExamSet(examSet);
+//
+//            for (String[] data : questionsData) {
+//                Question question = new Question();
+//                question.setContent(data[0]);
+//                question.setImagePath(data[5]); // Image path
+//                question.setCriticalQuiz(true); // Adjust as needed
+//                question.setConfusingQuiz(false); // Adjust as needed
+//                question.setQuestionExplanation("Explanation for " + data[0]);
+//                question.setQuestionStatus("not_yet_done");
+//                question.setCategoryId(getCategoryIdByName(data[4], categoryDAO)); // Map category name to ID
+//                long questionId = questionDAO.insertQuestion(question);
+//
+//                Answer answer1 = new Answer();
+//                answer1.setCorrect(Boolean.parseBoolean(data[2]));
+//                answer1.setContent(data[1]);
+//                answer1.setImagePath("");
+//                answer1.setQuestionId((int) questionId);
+//                answerDAO.insertAnswer(answer1);
+//
+//                Answer answer2 = new Answer();
+//                answer2.setCorrect(Boolean.parseBoolean(data[4]));
+//                answer2.setContent(data[3]);
+//                answer2.setImagePath("");
+//                answer2.setQuestionId((int) questionId);
+//                answerDAO.insertAnswer(answer2);
+//
+//                ExamSetQuestion eq = new ExamSetQuestion();
+//                eq.setQuestionId((int) questionId);
+//                eq.setExamSetId((int) examSetId);
+//                examSetQuestionDAO.insertExamSetQuestion(eq);
+//            }
+//        }
+//    }
 }

@@ -5,15 +5,10 @@ import android.os.CountDownTimer;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.androidproject.OnAnswerSubmittedListener;
-import com.example.androidproject.QuestionFragment;
 import com.example.androidproject.R;
 import com.example.androidproject.adapter.QuestionPagerAdapter;
 import com.example.androidproject.dao.QuestionDAO;

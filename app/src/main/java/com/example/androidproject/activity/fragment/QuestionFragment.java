@@ -1,10 +1,12 @@
-package com.example.androidproject;
+package com.example.androidproject.activity.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -14,6 +16,8 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.example.androidproject.OnAnswerSubmittedListener;
+import com.example.androidproject.R;
 import com.example.androidproject.dao.AnswerDAO;
 import com.example.androidproject.dao.QuestionDAO;
 import com.example.androidproject.model.Answer;
@@ -34,6 +38,7 @@ public class QuestionFragment extends Fragment {
     private Question question;
     private List<Answer> answers;
     private OnAnswerSubmittedListener listener;
+    RadioGroup rgAnswers;
 
     public static QuestionFragment newInstance(int questionId) {
         QuestionFragment fragment = new QuestionFragment();
@@ -60,10 +65,10 @@ public class QuestionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_question, container, false);
-
+        Log.e("QuestionContent", question.getContent());
         TextView tvQuestionContent = view.findViewById(R.id.tv_question_content);
         ImageView ivQuestionImage = view.findViewById(R.id.iv_question_image);
-        LinearLayout llAnswersContainer = view.findViewById(R.id.ll_answers_container);
+        FrameLayout llAnswersContainer = view.findViewById(R.id.ll_answers_container);
         Button btnSubmit = view.findViewById(R.id.btn_submit);
 
         // Set question content
@@ -81,41 +86,27 @@ public class QuestionFragment extends Fragment {
                 e.printStackTrace();
             }
         }
+        llAnswersContainer.removeAllViews();
 
-        // Add answers with images
-        int selectedId = -1;
-        for (int i = 0; i < answers.size(); i++) {
-            Answer answer = answers.get(i);
-            LinearLayout answerLayout = new LinearLayout(requireContext());
-            answerLayout.setOrientation(LinearLayout.VERTICAL);
-            answerLayout.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+// Tạo RadioGroup
+        RadioGroup rgAnswers = new RadioGroup(requireContext());
+        rgAnswers.setOrientation(LinearLayout.VERTICAL);
 
+        for (Answer answer : answers) {
             RadioButton radioButton = new RadioButton(requireContext());
             radioButton.setText(answer.getContent());
-            radioButton.setId(View.generateViewId());
-            if (i == 0) selectedId = radioButton.getId(); // Default select first
-            radioButton.setTag(answer.getId());
+            rgAnswers.addView(radioButton);
 
             if (!answer.getImagePath().isEmpty()) {
-                ImageView ivAnswerImage = new ImageView(requireContext());
-                ivAnswerImage.setLayoutParams(new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, 100));
-                try {
-                    Glide.with(this)
-                            .load(getImageResource(answer.getImagePath()))
-                            .into(ivAnswerImage);
-                    answerLayout.addView(ivAnswerImage);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                ImageView iv = new ImageView(requireContext());
+                // Load image with Glide
+                rgAnswers.addView(iv);
             }
-            answerLayout.addView(radioButton);
-            llAnswersContainer.addView(answerLayout);
         }
 
+        llAnswersContainer.addView(rgAnswers);
         btnSubmit.setOnClickListener(v -> {
-            int checkedId = ((RadioGroup) llAnswersContainer.getChildAt(0)).getCheckedRadioButtonId();
+            int checkedId = rgAnswers.getCheckedRadioButtonId();
             if (checkedId != -1) {
                 RadioButton selectedRadio = view.findViewById(checkedId);
                 int answerId = (int) selectedRadio.getTag();

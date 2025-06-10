@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll_answers_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".QuestionFragment">
+    tools:context=".activity.fragment.QuestionFragment">
 
     <!-- Question Content -->
     <TextView
@@ -28,7 +28,9 @@
         android:id="@+id/rg_answers"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"></RadioGroup>
+        android:padding="8dp">
+
+    </RadioGroup>
 
     <!-- Submit Button -->
     <Button
@@ -38,4 +40,4 @@
         android:layout_gravity="center"
         android:padding="8dp"
         android:text="Submit" />
-</LinearLayout>
+</FrameLayout>
