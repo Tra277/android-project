@@ -125,10 +125,9 @@ public class QuestionFragment extends Fragment {
         llAnswersContainer.addView(rgAnswers);
 
         // Set submit button listener
-        btnSubmit.setOnClickListener(v -> {
-            int checkedId = rgAnswers.getCheckedRadioButtonId();
-            if (checkedId != -1) {
-                RadioButton selectedRadio = rgAnswers.findViewById(checkedId);
+        rgAnswers.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId != -1) { // A RadioButton is selected
+                RadioButton selectedRadio = group.findViewById(checkedId);
                 Integer answerId = (Integer) selectedRadio.getTag();
                 Answer selectedAnswer = answers.stream()
                         .filter(a -> a.getId() == answerId)
@@ -137,12 +136,19 @@ public class QuestionFragment extends Fragment {
                 if (selectedAnswer != null && listener != null) {
                     String status = selectedAnswer.isCorrect() ? "correct" : "incorrect";
                     listener.onAnswerSubmitted(question.getId(), status);
+//                    // Optional: Disable RadioGroup to prevent further changes
+//                    rgAnswers.setEnabled(false);
+//                    for (int i = 0; i < rgAnswers.getChildCount(); i++) {
+//                        rgAnswers.getChildAt(i).setEnabled(false);
+//                    }
                 }
-            } else {
-                Log.d("QuestionFragment", "No answer selected");
             }
         });
 
+        // Set submit button listener
+        btnSubmit.setOnClickListener(v -> {
+
+        });
         return view;
     }
 

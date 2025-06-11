@@ -55,7 +55,7 @@ public class QuizActivity extends AppCompatActivity implements OnAnswerSubmitted
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> tab.setText("Câu " + (position + 1)))
                 .attach();
-
+        updateProgress();
         // Set up timer (e.g., 20 minutes = 1800000 * 2 / 3 ms)
         countDownTimer = new CountDownTimer(1800000 * 2 / 3, 1000) {
             @Override
@@ -89,18 +89,21 @@ public class QuizActivity extends AppCompatActivity implements OnAnswerSubmitted
             updateProgress();
 
             // Refresh TabLayout to show updated status
-            refreshTabs();
+            //refreshTabs();
         }
     }
 
     public void updateProgress() {
+        completedQuestions = (int) questionDAO.getAllQuestions().stream()
+                .filter(q -> !q.getQuestionStatus().equals("not_yet_done"))
+                .count();
         int progress = (int) ((completedQuestions / (float) totalQuestions) * 100);
         progressBar.setProgress(progress);
     }
 
     private void refreshTabs() {
         TabLayoutMediator mediator = new TabLayoutMediator(tabLayout, viewPager,
-                (tab, position) -> tab.setText("Câu " + (position + 1) + " (" + questions.get(position).getQuestionStatus() + ")"));
+                (tab, position) -> tab.setText("Câu " + (position + 1) ));
         mediator.attach();
     }
 
