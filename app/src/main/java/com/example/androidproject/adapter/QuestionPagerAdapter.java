@@ -13,12 +13,11 @@ import java.util.List;
 
 public class QuestionPagerAdapter extends FragmentStateAdapter {
     private List<Question> questions;
-    private QuestionDAO questionDAO;
 
-    public QuestionPagerAdapter(FragmentActivity fragmentActivity) {
+    public QuestionPagerAdapter(FragmentActivity fragmentActivity, List<Question> questions) {
         super(fragmentActivity);
-        questionDAO = new QuestionDAO(fragmentActivity);
-        questions = questionDAO.getAllQuestions();
+
+        this.questions = questions;
     }
 
     @NonNull

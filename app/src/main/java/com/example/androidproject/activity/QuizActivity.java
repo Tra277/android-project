@@ -40,17 +40,33 @@ public class QuizActivity extends AppCompatActivity implements OnAnswerSubmitted
         viewPager = findViewById(R.id.view_pager);
         tvTimer = findViewById(R.id.tv_timer);
         progressBar = findViewById(R.id.progress_bar);
-
-        // Initialize DAO and load questions
         questionDAO = new QuestionDAO(this);
-        questions = questionDAO.getAllQuestions();
+
+
+        String quizMode = getIntent().getStringExtra("quiz_mode");
+        if (quizMode == null) {
+            quizMode = "random_exam"; // Default mode
+        }
+        if(quizMode.equals("random_exam")) {
+            questions = questionDAO.getRandomQuestions();
+        }
+        if(quizMode.equals("top_wquiz")) {
+            questions = questionDAO.getAllQuestions();
+        }
+        // Initialize DAO and load questions
+        for (Question question : questions) {
+            question.setQuestionStatus("not_yet_done");
+            questionDAO.updateQuestion(question);
+        }
+        viewPager.setOffscreenPageLimit(questions.size());
+
         totalQuestions = questions.size();
         completedQuestions = (int) questions.stream()
                 .filter(q -> !q.getQuestionStatus().equals("not_yet_done"))
                 .count();
 
         // Set up ViewPager and TabLayout
-        QuestionPagerAdapter adapter = new QuestionPagerAdapter(this);
+        QuestionPagerAdapter adapter = new QuestionPagerAdapter(this,questions);
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> tab.setText("Câu " + (position + 1)))
@@ -94,7 +110,7 @@ public class QuizActivity extends AppCompatActivity implements OnAnswerSubmitted
     }
 
     public void updateProgress() {
-        completedQuestions = (int) questionDAO.getAllQuestions().stream()
+        completedQuestions = (int) questions.stream()
                 .filter(q -> !q.getQuestionStatus().equals("not_yet_done"))
                 .count();
         int progress = (int) ((completedQuestions / (float) totalQuestions) * 100);

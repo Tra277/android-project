@@ -1,5 +1,7 @@
 package com.example.androidproject.activity.fragment;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,12 +14,14 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.androidproject.OnAnswerSubmittedListener;
 import com.example.androidproject.R;
+import com.example.androidproject.activity.ResultActivity;
 import com.example.androidproject.dao.AnswerDAO;
 import com.example.androidproject.dao.QuestionDAO;
 import com.example.androidproject.model.Answer;
@@ -25,11 +29,6 @@ import com.example.androidproject.model.Question;
 
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link QuestionFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class QuestionFragment extends Fragment {
     private static final String ARG_QUESTION_ID = "question_id";
     private QuestionDAO questionDAO;
@@ -37,7 +36,7 @@ public class QuestionFragment extends Fragment {
     private Question question;
     private List<Answer> answers;
     private OnAnswerSubmittedListener listener;
-    private RadioGroup rgAnswers; // Field to store the programmatically created RadioGroup
+    private RadioGroup rgAnswers;
 
     public static QuestionFragment newInstance(int questionId) {
         QuestionFragment fragment = new QuestionFragment();
@@ -105,7 +104,7 @@ public class QuestionFragment extends Fragment {
         for (Answer answer : answers) {
             RadioButton radioButton = new RadioButton(requireContext());
             radioButton.setText(answer.getContent());
-            radioButton.setTag(answer.getId()); // Set tag to answer ID
+            radioButton.setTag(answer.getId());
             rgAnswers.addView(radioButton);
 
             if (!answer.getImagePath().isEmpty()) {
@@ -124,9 +123,9 @@ public class QuestionFragment extends Fragment {
         // Add RadioGroup to container
         llAnswersContainer.addView(rgAnswers);
 
-        // Set submit button listener
+        // Auto-submit answer when RadioButton is selected
         rgAnswers.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId != -1) { // A RadioButton is selected
+            if (checkedId != -1) {
                 RadioButton selectedRadio = group.findViewById(checkedId);
                 Integer answerId = (Integer) selectedRadio.getTag();
                 Answer selectedAnswer = answers.stream()
@@ -136,19 +135,24 @@ public class QuestionFragment extends Fragment {
                 if (selectedAnswer != null && listener != null) {
                     String status = selectedAnswer.isCorrect() ? "correct" : "incorrect";
                     listener.onAnswerSubmitted(question.getId(), status);
-//                    // Optional: Disable RadioGroup to prevent further changes
-//                    rgAnswers.setEnabled(false);
-//                    for (int i = 0; i < rgAnswers.getChildCount(); i++) {
-//                        rgAnswers.getChildAt(i).setEnabled(false);
-//                    }
                 }
             }
         });
 
-        // Set submit button listener
+        // Submit button to complete the quiz
         btnSubmit.setOnClickListener(v -> {
-
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Xác nhận nộp!")
+                    .setMessage("Bạn muốn nộp chứ?")
+                    .setPositiveButton("Vâng!", (dialog, which) -> {
+                        Toast.makeText(requireContext(), "Đã nộp bài!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(requireContext(), ResultActivity.class);
+                        startActivity(intent);
+                    })
+                    .setNegativeButton("Huỷ", null)
+                    .show();
         });
+
         return view;
     }
 

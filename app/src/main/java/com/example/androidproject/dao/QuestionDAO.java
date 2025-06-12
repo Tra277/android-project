@@ -77,6 +77,24 @@ public class QuestionDAO {
         return questions;
     }
 
+    //get random 25 questions
+    public List<Question> getRandomQuestions() {
+        List<Question> questions = new ArrayList<>();
+        open();
+        String query = "SELECT * FROM Question ORDER BY RANDOM() LIMIT 25";
+        Cursor cursor = database.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                questions.add(cursorToQuestion(cursor));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        close();
+        return questions;
+    }
+
     // Update a question
     public int updateQuestion(Question question) {
         open();

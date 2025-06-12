@@ -18,7 +18,7 @@ import com.example.androidproject.db.DatabaseHelper;
 
 public class MainActivity extends AppCompatActivity {
     ImageView imageView;
-    Button btnRandomExam;
+    Button btnRandomExam, btnExamSet, btnCriticalQuiz, btnTopWQuiz,btnWQuizReview,btnQuizPractice;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +36,11 @@ public class MainActivity extends AppCompatActivity {
         });
         //dbHelper.populateInitialData();
         btnRandomExam = findViewById(R.id.btnRandomExam);
+        btnExamSet = findViewById(R.id.btnExamSet);
+        btnCriticalQuiz = findViewById(R.id.btnCriticalQuiz);
+        btnTopWQuiz = findViewById(R.id.btnTopWQuiz);
+        btnWQuizReview = findViewById(R.id.btnWQuizReview);
+        btnQuizPractice = findViewById(R.id.btnQuizPractice);
 //        imageView = findViewById(R.id.imageView);
 //        String imageName = "truy_kich";
 //
@@ -51,7 +56,33 @@ public class MainActivity extends AppCompatActivity {
 //        }
         btnRandomExam.setOnClickListener(v -> {
            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
+           intent.putExtra("quiz_mode", "random_exam");
            startActivity(intent);
         });
+        btnExamSet.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
+            startActivity(intent);
+        });
+        btnCriticalQuiz.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
+            intent.putExtra("quiz_mode", "critical_quiz");
+            startActivity(intent);
+        });
+        btnTopWQuiz.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
+            intent.putExtra("quiz_mode", "top_wquiz");
+            startActivity(intent);
+        });
+        btnWQuizReview.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
+            intent.putExtra("quiz_mode", "wquiz_review");
+            startActivity(intent);
+        });
+        btnQuizPractice.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
+            startActivity(intent);
+        });
+
+
     }
 }
