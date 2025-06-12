@@ -1,9 +1,13 @@
 package com.example.androidproject.activity;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
@@ -29,6 +33,7 @@ public class QuizActivity extends AppCompatActivity implements OnAnswerSubmitted
     private CountDownTimer countDownTimer;
     private int totalQuestions;
     private int completedQuestions;
+    private Button btnSubmitQuiz;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +46,7 @@ public class QuizActivity extends AppCompatActivity implements OnAnswerSubmitted
         tvTimer = findViewById(R.id.tv_timer);
         progressBar = findViewById(R.id.progress_bar);
         questionDAO = new QuestionDAO(this);
+        btnSubmitQuiz = findViewById(R.id.btn_submit_quiz);
 
 
         String quizMode = getIntent().getStringExtra("quiz_mode");
@@ -87,6 +93,28 @@ public class QuizActivity extends AppCompatActivity implements OnAnswerSubmitted
                 // Handle quiz completion
             }
         }.start();
+        btnSubmitQuiz.setOnClickListener(v -> {
+            new AlertDialog.Builder(this)
+                    .setTitle("Xác nhận nộp!")
+                    .setMessage("Bạn muốn nộp bài chứ?")
+                    .setPositiveButton("Vâng!", (dialog, which) -> {
+                        Toast.makeText(this, "Đã nộp bài!", Toast.LENGTH_SHORT).show();
+                        submitQuiz();
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .show();
+        });
+    }
+    private void submitQuiz() {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+        Intent intent = new Intent(this, ResultActivity.class);
+        //intent.putExtra("correct_count", viewModel.getCorrectAnswersCount());
+        intent.putExtra("total_questions", totalQuestions);
+        intent.putExtra("quiz_mode", getIntent().getStringExtra("quiz_mode"));
+        startActivity(intent);
+        finish();
     }
     @Override
     public void onAnswerSubmitted(int questionId, String status) {
@@ -110,9 +138,15 @@ public class QuizActivity extends AppCompatActivity implements OnAnswerSubmitted
     }
 
     public void updateProgress() {
-        completedQuestions = (int) questions.stream()
-                .filter(q -> !q.getQuestionStatus().equals("not_yet_done"))
-                .count();
+        completedQuestions = 0;
+
+        for (Question question : questions) {
+            // Reload the latest status from DB
+            Question updated = questionDAO.getQuestionById(question.getId());
+            if (updated != null && !updated.getQuestionStatus().equals("not_yet_done")) {
+                completedQuestions++;
+            }
+        }
         int progress = (int) ((completedQuestions / (float) totalQuestions) * 100);
         progressBar.setProgress(progress);
     }

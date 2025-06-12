@@ -69,7 +69,7 @@ public class QuestionFragment extends Fragment {
         TextView tvQuestionContent = view.findViewById(R.id.tv_question_content);
         ImageView ivQuestionImage = view.findViewById(R.id.iv_question_image);
         FrameLayout llAnswersContainer = view.findViewById(R.id.ll_answers_container);
-        Button btnSubmit = view.findViewById(R.id.btn_submit);
+        //Button btnSubmit = view.findViewById(R.id.btn_submit);
 
         // Set question content
         if (question != null && !question.getContent().isEmpty()) {
@@ -140,18 +140,18 @@ public class QuestionFragment extends Fragment {
         });
 
         // Submit button to complete the quiz
-        btnSubmit.setOnClickListener(v -> {
-            new AlertDialog.Builder(requireContext())
-                    .setTitle("Xác nhận nộp!")
-                    .setMessage("Bạn muốn nộp chứ?")
-                    .setPositiveButton("Vâng!", (dialog, which) -> {
-                        Toast.makeText(requireContext(), "Đã nộp bài!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(requireContext(), ResultActivity.class);
-                        startActivity(intent);
-                    })
-                    .setNegativeButton("Huỷ", null)
-                    .show();
-        });
+//        btnSubmit.setOnClickListener(v -> {
+//            new AlertDialog.Builder(requireContext())
+//                    .setTitle("Xác nhận nộp!")
+//                    .setMessage("Bạn muốn nộp chứ?")
+//                    .setPositiveButton("Vâng!", (dialog, which) -> {
+//                        Toast.makeText(requireContext(), "Đã nộp bài!", Toast.LENGTH_SHORT).show();
+//                        Intent intent = new Intent(requireContext(), ResultActivity.class);
+//                        startActivity(intent);
+//                    })
+//                    .setNegativeButton("Huỷ", null)
+//                    .show();
+//        });
 
         return view;
     }
