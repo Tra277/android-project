@@ -16,7 +16,6 @@ public class QuestionPagerAdapter extends FragmentStateAdapter {
 
     public QuestionPagerAdapter(FragmentActivity fragmentActivity, List<Question> questions) {
         super(fragmentActivity);
-
         this.questions = questions;
     }
 

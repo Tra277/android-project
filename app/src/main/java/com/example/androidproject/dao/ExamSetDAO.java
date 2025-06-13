@@ -27,13 +27,13 @@ public class ExamSetDAO {
         dbHelper.close();
     }
 
-    public long insertExamSet(ExamSet examSet) {
+    public long addExamSet(ExamSet examSet) {
         open();
         ContentValues values = new ContentValues();
         values.put("name", examSet.getName());
         values.put("total_correct_answer", examSet.getTotalCorrectAnswer());
         values.put("total_wrong_answer", examSet.getTotalWrongAnswer());
-
+        values.put("is_showed", examSet.isShowed());
         long id = database.insert("ExamSet", null, values);
         close();
         return id;
@@ -80,6 +80,23 @@ public class ExamSetDAO {
                 new String[]{String.valueOf(examSet.getId())});
         close();
         return rowsAffected;
+    }
+
+    //Delete all exam sets with is_showed = false
+    public void deleteOldExamSets() {
+        open();
+
+        // Delete from ExamSetQuestion first
+        database.delete("ExamSetQuestion",
+                "exam_set_id IN (SELECT id FROM ExamSet WHERE is_showed = ?)",
+                new String[]{"0"});
+
+        // Then delete from ExamSet
+        database.delete("ExamSet",
+                "is_showed = ?",
+                new String[]{"0"});
+
+        close();
     }
 
     public void deleteExamSet(int id) {

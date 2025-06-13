@@ -77,6 +77,23 @@ public class QuestionDAO {
         return questions;
     }
 
+    public List<Question> getQuestionsByExamSetId(long examSetId) {
+        List<Question> questions = new ArrayList<>();
+        open();
+        Cursor cursor = database.rawQuery(
+                "SELECT q.* FROM Question q INNER JOIN ExamSetQuestion esq ON q.id = esq.question_id WHERE esq.exam_set_id = ?",
+                new String[]{String.valueOf(examSetId)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                questions.add(cursorToQuestion(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        close();
+        return questions;
+    }
+
     //get random 25 questions
     public List<Question> getRandomQuestions() {
         List<Question> questions = new ArrayList<>();
@@ -90,6 +107,86 @@ public class QuestionDAO {
             } while (cursor.moveToNext());
         }
 
+        cursor.close();
+        close();
+        return questions;
+    }
+
+    public List<Question> getQuestionsByCategory(int categoryId) {
+        List<Question> questions = new ArrayList<>();
+        open();
+        Cursor cursor = database.query("Question", null, "category_id = ?",
+                new String[]{String.valueOf(categoryId)}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                questions.add(cursorToQuestion(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        close();
+        return questions;
+    }
+
+    public List<Question> getQuestionsByCategoryAndStatus(int categoryId, String status) {
+        List<Question> questions = new ArrayList<>();
+        open();
+        Cursor cursor = database.query("Question", null, "category_id = ? AND question_status = ?",
+                new String[]{String.valueOf(categoryId), status}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                questions.add(cursorToQuestion(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        close();
+        return questions;
+    }
+
+    public List<Question> getQuestionsByStatus(String status) {
+        List<Question> questions = new ArrayList<>();
+        open();
+        Cursor cursor = database.query("Question", null, "question_status = ?",
+                new String[]{status}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                questions.add(cursorToQuestion(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        close();
+        return questions;
+    }
+
+    public List<Question> getCriticalQuestions() {
+        List<Question> questions = new ArrayList<>();
+        open();
+        Cursor cursor = database.query("Question", null, "is_critical_quiz = 1",
+                null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                questions.add(cursorToQuestion(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        close();
+        return questions;
+    }
+
+    public List<Question> getConfusingQuestions() {
+        List<Question> questions = new ArrayList<>();
+        open();
+        Cursor cursor = database.query("Question", null, "is_confusing_quiz = 1",
+                null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                questions.add(cursorToQuestion(cursor));
+            } while (cursor.moveToNext());
+        }
         cursor.close();
         close();
         return questions;

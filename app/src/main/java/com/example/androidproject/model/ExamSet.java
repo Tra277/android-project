@@ -5,22 +5,25 @@ public class ExamSet {
     private String name;
     private int totalCorrectAnswer;
     private int totalWrongAnswer;
+    private boolean isShowed;
 
     // Constructors
     public ExamSet() {
     }
 
-    public ExamSet(int id, String name, int totalCorrectAnswer, int totalWrongAnswer) {
+    public ExamSet(int id, String name, int totalCorrectAnswer, int totalWrongAnswer, boolean isShowed) {
         this.id = id;
         this.name = name;
         this.totalCorrectAnswer = totalCorrectAnswer;
         this.totalWrongAnswer = totalWrongAnswer;
+        this.isShowed = isShowed;
     }
 
-    public ExamSet( String name, int totalCorrectAnswer, int totalWrongAnswer) {
+    public ExamSet( String name, int totalCorrectAnswer, int totalWrongAnswer, boolean isShowed) {
         this.name = name;
         this.totalCorrectAnswer = totalCorrectAnswer;
         this.totalWrongAnswer = totalWrongAnswer;
+        this.isShowed = isShowed;
     }
 
     // Getters and Setters
@@ -54,5 +57,13 @@ public class ExamSet {
 
     public void setTotalWrongAnswer(int totalWrongAnswer) {
         this.totalWrongAnswer = totalWrongAnswer;
+    }
+
+    public boolean isShowed() {
+        return isShowed;
+    }
+
+    public void setShowed(boolean showed) {
+        isShowed = showed;
     }
 }

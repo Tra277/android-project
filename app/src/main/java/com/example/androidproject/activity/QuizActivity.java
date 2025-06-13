@@ -15,11 +15,16 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.androidproject.OnAnswerSubmittedListener;
 import com.example.androidproject.R;
 import com.example.androidproject.adapter.QuestionPagerAdapter;
+import com.example.androidproject.dao.ExamSetDAO;
+import com.example.androidproject.dao.ExamSetQuestionDAO;
 import com.example.androidproject.dao.QuestionDAO;
+import com.example.androidproject.model.ExamSet;
+import com.example.androidproject.model.ExamSetQuestion;
 import com.example.androidproject.model.Question;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.Date;
 import java.util.List;
 
 public class QuizActivity extends AppCompatActivity implements OnAnswerSubmittedListener {
@@ -34,6 +39,9 @@ public class QuizActivity extends AppCompatActivity implements OnAnswerSubmitted
     private int totalQuestions;
     private int completedQuestions;
     private Button btnSubmitQuiz;
+    private ExamSetDAO examSetDAO;
+    private ExamSetQuestionDAO examSetQuestionDAO;
+    private long examSetId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,24 +55,76 @@ public class QuizActivity extends AppCompatActivity implements OnAnswerSubmitted
         progressBar = findViewById(R.id.progress_bar);
         questionDAO = new QuestionDAO(this);
         btnSubmitQuiz = findViewById(R.id.btn_submit_quiz);
-
-
+        examSetDAO = new ExamSetDAO(this);
+        examSetQuestionDAO = new ExamSetQuestionDAO(this);
+        examSetDAO.deleteOldExamSets();
         String quizMode = getIntent().getStringExtra("quiz_mode");
         if (quizMode == null) {
             quizMode = "random_exam"; // Default mode
         }
         if(quizMode.equals("random_exam")) {
             questions = questionDAO.getRandomQuestions();
+            ExamSet examSet = new ExamSet("Random Exam", questions.size(), 0, false );
+
+            long newExamSetId = examSetDAO.addExamSet(examSet);
+            examSetId = newExamSetId;
+            for (Question question : questions) {
+                ExamSetQuestion examSetQuestion = new ExamSetQuestion();
+                examSetQuestion.setQuestionId(question.getId());
+                examSetQuestion.setExamSetId((int)newExamSetId);
+                examSetQuestionDAO.insertExamSetQuestion(examSetQuestion);
+            }
+
         }
         if(quizMode.equals("top_wquiz")) {
-            questions = questionDAO.getAllQuestions();
+            questions = questionDAO.getConfusingQuestions();
+            ExamSet examSet = new ExamSet("Confusing Exam", questions.size(), 0, false );
+
+            long newExamSetId = examSetDAO.addExamSet(examSet);
+            examSetId = newExamSetId;
+            for (Question question : questions) {
+                ExamSetQuestion examSetQuestion = new ExamSetQuestion();
+                examSetQuestion.setQuestionId(question.getId());
+                examSetQuestion.setExamSetId((int)newExamSetId);
+                examSetQuestionDAO.insertExamSetQuestion(examSetQuestion);
+            }
         }
+        if(quizMode.equals("critical_quiz")) {
+           questions = questionDAO.getCriticalQuestions();
+            ExamSet examSet = new ExamSet("Critical Exam", questions.size(), 0, false );
+
+            long newExamSetId = examSetDAO.addExamSet(examSet);
+            examSetId = newExamSetId;
+            for (Question question : questions) {
+                ExamSetQuestion examSetQuestion = new ExamSetQuestion();
+                examSetQuestion.setQuestionId(question.getId());
+                examSetQuestion.setExamSetId((int)newExamSetId);
+                examSetQuestionDAO.insertExamSetQuestion(examSetQuestion);
+            }
+        }
+        if(quizMode.equals("wquiz_review")) {
+            questions = questionDAO.getQuestionsByStatus("incorrect");
+            if(questions.size() > 0){
+                ExamSet examSet = new ExamSet("Wrong Quiz Review Exam", questions.size(), 0, false );
+                long newExamSetId = examSetDAO.addExamSet(examSet);
+                examSetId = newExamSetId;
+                for (Question question : questions) {
+                    ExamSetQuestion examSetQuestion = new ExamSetQuestion();
+                    examSetQuestion.setQuestionId(question.getId());
+                    examSetQuestion.setExamSetId((int)newExamSetId);
+                    examSetQuestionDAO.insertExamSetQuestion(examSetQuestion);
+                }
+            }
+        }
+
         // Initialize DAO and load questions
         for (Question question : questions) {
             question.setQuestionStatus("not_yet_done");
             questionDAO.updateQuestion(question);
         }
-        viewPager.setOffscreenPageLimit(questions.size());
+        if(questions.size() > 0){
+            viewPager.setOffscreenPageLimit(questions.size());
+        }
 
         totalQuestions = questions.size();
         completedQuestions = (int) questions.stream()
@@ -110,11 +170,9 @@ public class QuizActivity extends AppCompatActivity implements OnAnswerSubmitted
             countDownTimer.cancel();
         }
         Intent intent = new Intent(this, ResultActivity.class);
-        //intent.putExtra("correct_count", viewModel.getCorrectAnswersCount());
         intent.putExtra("total_questions", totalQuestions);
-        intent.putExtra("quiz_mode", getIntent().getStringExtra("quiz_mode"));
+        intent.putExtra("exam_set_id", examSetId);
         startActivity(intent);
-        finish();
     }
     @Override
     public void onAnswerSubmitted(int questionId, String status) {
