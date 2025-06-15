@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -7,29 +8,16 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
-    <!-- ✅ App Bar -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/topAppBar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/purple_500"
-        android:title="Ôn thi GPLX"
-        android:titleTextColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:title="Ôn thi GPLX" />
+    <!-- Nội dung chính nằm dưới App Bar -->
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-
-        app:layout_constraintTop_toBottomOf="@id/topAppBar">
-
+        app:layout_constraintEnd_toEndOf="parent">
 
         <TableLayout
             android:layout_width="match_parent"
@@ -40,9 +28,7 @@
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-
-                >
+                android:layout_weight="1">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRandomExam"
@@ -67,7 +53,6 @@
                     app:iconPadding="8dp"
                     app:iconSize="50dp"
                     app:iconTint="@color/white" />
-
             </TableRow>
 
             <TableRow
@@ -130,12 +115,7 @@
                     app:iconTint="@color/white" />
             </TableRow>
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
         </TableLayout>
     </LinearLayout>
-
-    <!-- ✅ Nội dung bên dưới App Bar -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

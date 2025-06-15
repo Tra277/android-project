@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.Menu;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -27,7 +28,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import java.util.Date;
 import java.util.List;
 
-public class QuizActivity extends AppCompatActivity implements OnAnswerSubmittedListener {
+public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListener {
 
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
@@ -48,6 +49,10 @@ public class QuizActivity extends AppCompatActivity implements OnAnswerSubmitted
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
+        setSupportActionBar(toolbar);
+        toolbar.setTitle("Bài thi");
+        toolbar.setNavigationIcon(null); // ←
+        toolbar.inflateMenu(R.menu.top_app_bar_exam);
         // Initialize views
         tabLayout = findViewById(R.id.tab_layout);
         viewPager = findViewById(R.id.view_pager);
@@ -164,6 +169,17 @@ public class QuizActivity extends AppCompatActivity implements OnAnswerSubmitted
                     .setNegativeButton("Hủy", null)
                     .show();
         });
+
+    // drawer
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.show_question) {
+                Toast.makeText(this, "Show question", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            return false;
+        });
+
+
     }
     private void submitQuiz() {
         if (countDownTimer != null) {
@@ -221,5 +237,10 @@ public class QuizActivity extends AppCompatActivity implements OnAnswerSubmitted
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.top_app_bar_exam, menu);
+        return true;
     }
 }
