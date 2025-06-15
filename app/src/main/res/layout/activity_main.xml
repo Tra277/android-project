@@ -31,6 +31,7 @@
                 android:layout_weight="1">
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRandomExam"
                     style="@style/CustomButton.Red"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -42,6 +43,7 @@
                     app:iconTint="@color/white" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnExamSet"
                     style="@style/CustomButton.Orange"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -59,6 +61,7 @@
                 android:layout_weight="1">
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnWQuizReview"
                     style="@style/CustomButton.Green"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -70,6 +73,7 @@
                     app:iconTint="@color/white" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnQuizPractice"
                     style="@style/CustomButton.Gray"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -87,6 +91,7 @@
                 android:layout_weight="1">
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCriticalQuiz"
                     style="@style/CustomButton.Blue"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -98,6 +103,7 @@
                     app:iconTint="@color/white" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTopWQuiz"
                     style="@style/CustomButton.Purple"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -18,6 +18,12 @@
         <activity
             android:name=".activity.LicenseActivity"
             android:exported="false" />
+        <activity
+            android:name=".activity.ResultActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.QuizActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.TestService"
