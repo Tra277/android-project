@@ -12,7 +12,7 @@
         android:id="@+id/topAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="#2196F3"
         android:title="Ôn thi GPLX"
         android:titleTextColor="@android:color/white"
         app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
