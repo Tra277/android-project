@@ -25,6 +25,7 @@ import com.example.androidproject.model.Question;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -188,6 +189,30 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         Intent intent = new Intent(this, ResultActivity.class);
         intent.putExtra("total_questions", totalQuestions);
         intent.putExtra("exam_set_id", examSetId);
+
+        // Calculate quiz results
+        int correctAnswers = (int) questions.stream()
+                .filter(q -> q.getQuestionStatus().equals("correct"))
+                .count();
+        int incorrectAnswers = totalQuestions - correctAnswers;
+
+        // Pass quiz results to ResultActivity
+        intent.putExtra("correct_answers", correctAnswers);
+        intent.putExtra("incorrect_answers", incorrectAnswers);
+        intent.putExtra("time_taken", tvTimer.getText().toString()); // Assuming tvTimer displays the time
+        // Create a list of question statuses (0: not answered, 1: correct, 2: incorrect)
+        List<Integer> questionStatuses = new ArrayList<>();
+        for (Question question : questions) {
+            if (question.getQuestionStatus().equals("correct")) {
+                questionStatuses.add(1);
+            } else if (question.getQuestionStatus().equals("incorrect")) {
+                questionStatuses.add(2);
+            } else {
+                questionStatuses.add(0);
+            }
+        }
+        intent.putIntegerArrayListExtra("question_statuses", new ArrayList<>(questionStatuses));
+
         startActivity(intent);
     }
     @Override
