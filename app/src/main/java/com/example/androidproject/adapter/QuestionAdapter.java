@@ -14,9 +14,9 @@ import java.util.List;
 public class QuestionAdapter extends BaseAdapter {
 
     private Context context;
-    private List<Integer> questionStatuses; // 0: not answered, 1: correct, 2: incorrect
+    private List<String> questionStatuses; // "correct", "incorrect", "not_yet_done"
 
-    public QuestionAdapter(Context context, List<Integer> questionStatuses) {
+    public QuestionAdapter(Context context, List<String> questionStatuses) {
         this.context = context;
         this.questionStatuses = questionStatuses;
     }
@@ -43,15 +43,15 @@ public class QuestionAdapter extends BaseAdapter {
         }
 
         TextView questionTextView = convertView.findViewById(R.id.questionTextView);
-        int status = questionStatuses.get(position);
+        String status = questionStatuses.get(position);
 
         questionTextView.setText("Câu " + (position + 1));
 
         switch (status) {
-            case 1:
+            case "correct":
                 questionTextView.setBackgroundColor(context.getResources().getColor(R.color.correct_answer));
                 break;
-            case 2:
+            case "incorrect":
                 questionTextView.setBackgroundColor(context.getResources().getColor(R.color.incorrect_answer));
                 break;
             default:

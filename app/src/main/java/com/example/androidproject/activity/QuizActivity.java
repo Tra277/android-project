@@ -191,27 +191,30 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         intent.putExtra("exam_set_id", examSetId);
 
         // Calculate quiz results
-        int correctAnswers = (int) questions.stream()
-                .filter(q -> q.getQuestionStatus().equals("correct"))
-                .count();
+        int correctAnswers = 0;
+        for (Question question : questions) {
+            // Reload the latest status from DB
+            Question updated = questionDAO.getQuestionById(question.getId());
+            if (updated != null && updated.getQuestionStatus().equals("correct")) {
+                correctAnswers++;
+            }
+        }
         int incorrectAnswers = totalQuestions - correctAnswers;
 
         // Pass quiz results to ResultActivity
         intent.putExtra("correct_answers", correctAnswers);
         intent.putExtra("incorrect_answers", incorrectAnswers);
         intent.putExtra("time_taken", tvTimer.getText().toString()); // Assuming tvTimer displays the time
-        // Create a list of question statuses (0: not answered, 1: correct, 2: incorrect)
-        List<Integer> questionStatuses = new ArrayList<>();
+        // Create a list of question statuses ("correct", "incorrect", "not_yet_done")
+        List<String> questionStatuses = new ArrayList<>();
         for (Question question : questions) {
-            if (question.getQuestionStatus().equals("correct")) {
-                questionStatuses.add(1);
-            } else if (question.getQuestionStatus().equals("incorrect")) {
-                questionStatuses.add(2);
-            } else {
-                questionStatuses.add(0);
-            }
+            // Reload the latest status from DB
+            Question updated = questionDAO.getQuestionById(question.getId());
+            questionStatuses.add(updated.getQuestionStatus());
+
         }
-        intent.putIntegerArrayListExtra("question_statuses", new ArrayList<>(questionStatuses));
+        intent.putStringArrayListExtra("question_statuses", new ArrayList<>(questionStatuses));
+        intent.putParcelableArrayListExtra("questions", new ArrayList<>(questions));
 
         startActivity(intent);
     }
