@@ -25,6 +25,7 @@ import com.example.androidproject.model.Question;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -188,6 +189,33 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         Intent intent = new Intent(this, ResultActivity.class);
         intent.putExtra("total_questions", totalQuestions);
         intent.putExtra("exam_set_id", examSetId);
+
+        // Calculate quiz results
+        int correctAnswers = 0;
+        for (Question question : questions) {
+            // Reload the latest status from DB
+            Question updated = questionDAO.getQuestionById(question.getId());
+            if (updated != null && updated.getQuestionStatus().equals("correct")) {
+                correctAnswers++;
+            }
+        }
+        int incorrectAnswers = totalQuestions - correctAnswers;
+
+        // Pass quiz results to ResultActivity
+        intent.putExtra("correct_answers", correctAnswers);
+        intent.putExtra("incorrect_answers", incorrectAnswers);
+        intent.putExtra("time_taken", tvTimer.getText().toString()); // Assuming tvTimer displays the time
+        // Create a list of question statuses ("correct", "incorrect", "not_yet_done")
+        List<String> questionStatuses = new ArrayList<>();
+        for (Question question : questions) {
+            // Reload the latest status from DB
+            Question updated = questionDAO.getQuestionById(question.getId());
+            questionStatuses.add(updated.getQuestionStatus());
+
+        }
+        intent.putStringArrayListExtra("question_statuses", new ArrayList<>(questionStatuses));
+        intent.putParcelableArrayListExtra("questions", new ArrayList<>(questions));
+
         startActivity(intent);
     }
     @Override

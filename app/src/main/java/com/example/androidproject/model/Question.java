@@ -1,6 +1,9 @@
 package com.example.androidproject.model;
 
-public class Question {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Question implements Parcelable {
     private int id;
     private String content;
     private String imagePath;
@@ -90,5 +93,45 @@ public class Question {
 
     public void setCategoryId(int categoryId) {
         this.categoryId = categoryId;
+    }
+
+    protected Question(Parcel in) {
+        id = in.readInt();
+        content = in.readString();
+        imagePath = in.readString();
+        isCriticalQuiz = in.readByte() != 0;
+        isConfusingQuiz = in.readByte() != 0;
+        questionExplanation = in.readString();
+        questionStatus = in.readString();
+        categoryId = in.readInt();
+    }
+
+    public static final Creator<Question> CREATOR = new Creator<Question>() {
+        @Override
+        public Question createFromParcel(Parcel in) {
+            return new Question(in);
+        }
+
+        @Override
+        public Question[] newArray(int size) {
+            return new Question[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(content);
+        dest.writeString(imagePath);
+        dest.writeByte((byte) (isCriticalQuiz ? 1 : 0));
+        dest.writeByte((byte) (isConfusingQuiz ? 1 : 0));
+        dest.writeString(questionExplanation);
+        dest.writeString(questionStatus);
+        dest.writeInt(categoryId);
     }
 }
