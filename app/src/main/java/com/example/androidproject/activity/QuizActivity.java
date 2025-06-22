@@ -2,6 +2,7 @@ package com.example.androidproject.activity;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.Menu;
@@ -44,7 +45,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
     private ExamSetDAO examSetDAO;
     private ExamSetQuestionDAO examSetQuestionDAO;
     private long examSetId;
-
+    private int licenseId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,12 +66,14 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         examSetQuestionDAO = new ExamSetQuestionDAO(this);
         examSetDAO.deleteOldExamSets();
         String quizMode = getIntent().getStringExtra("quiz_mode");
+        SharedPreferences prefs = getSharedPreferences("data", MODE_PRIVATE);
+         licenseId = prefs.getInt("license_id", 1);
         if (quizMode == null) {
             quizMode = "random_exam"; // Default mode
         }
         if(quizMode.equals("random_exam")) {
             questions = questionDAO.getRandomQuestions();
-            ExamSet examSet = new ExamSet("Random Exam", questions.size(), 0, false );
+            ExamSet examSet = new ExamSet("Random Exam", questions.size(), 0, false ,licenseId);
 
             long newExamSetId = examSetDAO.addExamSet(examSet);
             examSetId = newExamSetId;
@@ -84,7 +87,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         }
         if(quizMode.equals("top_wquiz")) {
             questions = questionDAO.getConfusingQuestions();
-            ExamSet examSet = new ExamSet("Confusing Exam", questions.size(), 0, false );
+            ExamSet examSet = new ExamSet("Confusing Exam", questions.size(), 0, false ,licenseId);
 
             long newExamSetId = examSetDAO.addExamSet(examSet);
             examSetId = newExamSetId;
@@ -97,7 +100,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         }
         if(quizMode.equals("critical_quiz")) {
            questions = questionDAO.getCriticalQuestions();
-            ExamSet examSet = new ExamSet("Critical Exam", questions.size(), 0, false );
+            ExamSet examSet = new ExamSet("Critical Exam", questions.size(), 0, false ,licenseId);
 
             long newExamSetId = examSetDAO.addExamSet(examSet);
             examSetId = newExamSetId;
@@ -111,7 +114,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         if(quizMode.equals("wquiz_review")) {
             questions = questionDAO.getQuestionsByStatus("incorrect");
             if(questions.size() > 0){
-                ExamSet examSet = new ExamSet("Wrong Quiz Review Exam", questions.size(), 0, false );
+                ExamSet examSet = new ExamSet("Wrong Quiz Review Exam", questions.size(), 0, false ,licenseId);
                 long newExamSetId = examSetDAO.addExamSet(examSet);
                 examSetId = newExamSetId;
                 for (Question question : questions) {

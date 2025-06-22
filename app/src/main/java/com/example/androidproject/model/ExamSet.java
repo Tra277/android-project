@@ -6,24 +6,27 @@ public class ExamSet {
     private int totalCorrectAnswer;
     private int totalWrongAnswer;
     private boolean isShowed;
+    private long licenseId;
 
     // Constructors
     public ExamSet() {
     }
 
-    public ExamSet(int id, String name, int totalCorrectAnswer, int totalWrongAnswer, boolean isShowed) {
+    public ExamSet(int id, String name, int totalCorrectAnswer, int totalWrongAnswer, boolean isShowed,long licenseId) {
         this.id = id;
         this.name = name;
         this.totalCorrectAnswer = totalCorrectAnswer;
         this.totalWrongAnswer = totalWrongAnswer;
         this.isShowed = isShowed;
+        this.licenseId = licenseId;
     }
 
-    public ExamSet( String name, int totalCorrectAnswer, int totalWrongAnswer, boolean isShowed) {
+    public ExamSet( String name, int totalCorrectAnswer, int totalWrongAnswer, boolean isShowed,long licenseId) {
         this.name = name;
         this.totalCorrectAnswer = totalCorrectAnswer;
         this.totalWrongAnswer = totalWrongAnswer;
         this.isShowed = isShowed;
+        this.licenseId = licenseId;
     }
 
     // Getters and Setters
@@ -65,5 +68,13 @@ public class ExamSet {
 
     public void setShowed(boolean showed) {
         isShowed = showed;
+    }
+
+    public long getLicenseId() {
+        return licenseId;
+    }
+
+    public void setLicenseId(long licenseId) {
+        this.licenseId = licenseId;
     }
 }

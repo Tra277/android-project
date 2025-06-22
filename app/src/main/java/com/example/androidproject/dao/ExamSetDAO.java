@@ -34,6 +34,7 @@ public class ExamSetDAO {
         values.put("total_correct_answer", examSet.getTotalCorrectAnswer());
         values.put("total_wrong_answer", examSet.getTotalWrongAnswer());
         values.put("is_showed", examSet.isShowed());
+        values.put("license_id", examSet.getLicenseId());
         long id = database.insert("ExamSet", null, values);
         close();
         return id;
@@ -99,6 +100,22 @@ public class ExamSetDAO {
         close();
     }
 
+    public List<ExamSet> getExamSetsByLicenseId(int licenseId) {
+        List<ExamSet> examSets = new ArrayList<>();
+        open();
+        Cursor cursor = database.query("ExamSet", null, "license_id = ?",
+                new String[]{String.valueOf(licenseId)}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                examSets.add(cursorToExamSet(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        close();
+        return examSets;
+    }
+
     public void deleteExamSet(int id) {
         open();
         database.delete("ExamSet", "id = ?",
@@ -112,6 +129,7 @@ public class ExamSetDAO {
         examSet.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
         examSet.setTotalCorrectAnswer(cursor.getInt(cursor.getColumnIndexOrThrow("total_correct_answer")));
         examSet.setTotalWrongAnswer(cursor.getInt(cursor.getColumnIndexOrThrow("total_wrong_answer")));
+        examSet.setLicenseId(cursor.getInt(cursor.getColumnIndexOrThrow("license_id")));
         return examSet;
     }
 }

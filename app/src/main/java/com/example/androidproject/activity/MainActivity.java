@@ -1,6 +1,7 @@
 package com.example.androidproject.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
@@ -45,8 +46,8 @@ public class MainActivity extends BaseActivity {
             startActivity(intent);
         });
         btnExamSet.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
-            startActivity(intent);
+            Intent intent1 = new Intent(MainActivity.this, ExamSetActivity.class);
+            startActivity(intent1);
         });
         btnCriticalQuiz.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, QuizActivity.class);

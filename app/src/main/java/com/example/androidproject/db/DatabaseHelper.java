@@ -76,7 +76,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "name TEXT NOT NULL," +
                 "total_correct_answer INTEGER NOT NULL," +
                 "total_wrong_answer INTEGER NOT NULL," +
-                "is_showed INTEGER NOT NULL" +
+                "is_showed INTEGER NOT NULL," +
+                "license_id INTEGER," +
+                "FOREIGN KEY (license_id) REFERENCES DrivingLicense(id)" +
                 ")");
 
         // Create ExamSetQuestion table (junction table)
@@ -134,7 +136,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     // Add more rows for 325 questions
             };
 
-            ExamSet examSet = new ExamSet("Đề 1",0,0,true);
+            ExamSet examSet = new ExamSet("Đề 1",0,0,true, licenseA1Id);
             long examSetId = examSetDAO.addExamSet(examSet);
 
             for (String[] data : questionsData) {
