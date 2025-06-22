@@ -2,12 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_selected="true">
         <shape>
-            <solid android:color="#FFFFFF" /> <!-- Light blue for selected/hovered state -->
+            <solid android:color="#657b8f" /> <!-- Light blue for selected/hovered state -->
         </shape>
     </item>
-<!--    <item>-->
-<!--        <shape>-->
-<!--            <solid android:color="#FFFFFF" /> &lt;!&ndash; White for normal state &ndash;&gt;-->
-<!--        </shape>-->
-<!--    </item>-->
 </selector>
