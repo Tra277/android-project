@@ -48,7 +48,8 @@ public class ExamSetAdapter extends RecyclerView.Adapter<ExamSetAdapter.ViewHold
             public void onClick(View v) {
                 Intent intent = new Intent(context, QuizActivity.class);
                 // Pass data to QuizActivity
-                intent.putExtra("examSetName", examSet.getName());
+                intent.putExtra("quiz_mode", "exam_set");
+                intent.putExtra("examSetId", examSet.getId());
                 context.startActivity(intent);
             }
         });

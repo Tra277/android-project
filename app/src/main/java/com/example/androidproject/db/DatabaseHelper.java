@@ -33,7 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Create DrivingLicense table
         db.execSQL("CREATE TABLE DrivingLicense (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "code TEXT NOT NULL," +
+                "code TEXT NOT NULL UNIQUE," +
                 "description TEXT NOT NULL," +
                 "name TEXT NOT NULL" +
                 ")");
@@ -78,6 +78,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "total_wrong_answer INTEGER NOT NULL," +
                 "is_showed INTEGER NOT NULL," +
                 "license_id INTEGER," +
+                "is_done INTEGER DEFAULT 0," +
                 "FOREIGN KEY (license_id) REFERENCES DrivingLicense(id)" +
                 ")");
 
@@ -121,10 +122,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ExamSetQuestionDAO examSetQuestionDAO = new ExamSetQuestionDAO(context);
 
             // Insert initial DrivingLicense and Categories (as above)
-            long licenseA1Id = drivingLicenseDAO.insertDrivingLicense(new DrivingLicense(/*...*/));
-            long trafficRulesId = categoryDAO.insertCategory(new Category(/*...*/));
-            long roadSignsId = categoryDAO.insertCategory(new Category(/*...*/));
-            long safetyId = categoryDAO.insertCategory(new Category(/*...*/));
+            long licenseA1Id = drivingLicenseDAO.insertDrivingLicense(new DrivingLicense("A1", "Motorcycles with cylinder capacity from 50cm3 to 175cm3", "A1"));
+            long trafficRulesId = categoryDAO.insertCategory(new Category("Traffic Rules", "General traffic regulations", (int)licenseA1Id));
+            long roadSignsId = categoryDAO.insertCategory(new Category("Road Signs", "Information about road signs", (int)licenseA1Id));
+            long safetyId = categoryDAO.insertCategory(new Category("Safety", "Safety tips and guidelines", (int)licenseA1Id));
 
             // Bulk questions data (example array)
             String[][] questionsData = {
@@ -136,7 +137,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     // Add more rows for 325 questions
             };
 
-            ExamSet examSet = new ExamSet("Đề 1",0,0,true, licenseA1Id);
+            ExamSet examSet = new ExamSet("Đề 1",0,0,true, licenseA1Id,false);
             long examSetId = examSetDAO.addExamSet(examSet);
 
             for (String[] data : questionsData) {

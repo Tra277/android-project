@@ -70,6 +70,21 @@ public class ExamSetDAO {
         return examSets;
     }
 
+    public List<ExamSet> getExamSetsByLicenseCode(int licenseId) {
+        List<ExamSet> examSets = new ArrayList<>();
+        open();
+        Cursor cursor = database.query("ExamSet", null, "license_id = ?",
+                new String[]{String.valueOf(licenseId)}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                examSets.add(cursorToExamSet(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        close();
+        return examSets;
+    }
     public int updateExamSet(ExamSet examSet) {
         open();
         ContentValues values = new ContentValues();

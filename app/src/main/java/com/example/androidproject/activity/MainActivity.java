@@ -25,7 +25,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        //dbHelper.populateInitialData();
+        dbHelper.populateInitialData();
         setSupportActionBar(toolbar);
         toolbar.setTitle("600 câu hỏi ôn thi GPLX");
         toolbar.setNavigationIcon(null); // ←
