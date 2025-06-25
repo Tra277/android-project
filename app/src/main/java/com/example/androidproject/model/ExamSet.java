@@ -6,27 +6,32 @@ public class ExamSet {
     private int totalCorrectAnswer;
     private int totalWrongAnswer;
     private boolean isShowed;
+    private long licenseId;
+    private boolean isDone;
 
     // Constructors
     public ExamSet() {
     }
 
-    public ExamSet(int id, String name, int totalCorrectAnswer, int totalWrongAnswer, boolean isShowed) {
+    public ExamSet(int id, String name, int totalCorrectAnswer, int totalWrongAnswer, boolean isShowed, long licenseId, boolean isDone) {
         this.id = id;
         this.name = name;
         this.totalCorrectAnswer = totalCorrectAnswer;
         this.totalWrongAnswer = totalWrongAnswer;
         this.isShowed = isShowed;
+        this.licenseId = licenseId;
+        this.isDone = isDone;
     }
 
-    public ExamSet( String name, int totalCorrectAnswer, int totalWrongAnswer, boolean isShowed) {
+    public ExamSet(String name, int totalCorrectAnswer, int totalWrongAnswer, boolean isShowed, long licenseId, boolean isDone) {
         this.name = name;
         this.totalCorrectAnswer = totalCorrectAnswer;
         this.totalWrongAnswer = totalWrongAnswer;
         this.isShowed = isShowed;
+        this.licenseId = licenseId;
+        this.isDone = isDone;
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -65,5 +70,21 @@ public class ExamSet {
 
     public void setShowed(boolean showed) {
         isShowed = showed;
+    }
+
+    public long getLicenseId() {
+        return licenseId;
+    }
+
+    public void setLicenseId(long licenseId) {
+        this.licenseId = licenseId;
+    }
+
+    public boolean isDone() {
+        return isDone;
+    }
+
+    public void setDone(boolean done) {
+        isDone = done;
     }
 }

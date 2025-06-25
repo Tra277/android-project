@@ -53,6 +53,20 @@ public class DrivingLicenseDAO {
         return drivingLicense;
     }
 
+    public DrivingLicense getDrivingLicenseByCode(String code) {
+        open();
+        Cursor cursor = database.query("DrivingLicense", null, "code = ?",
+                new String[]{code}, null, null, null);
+
+        DrivingLicense drivingLicense = null;
+        if (cursor.moveToFirst()) {
+            drivingLicense = cursorToDrivingLicense(cursor);
+        }
+        cursor.close();
+        close();
+        return drivingLicense;
+    }
+
     public List<DrivingLicense> getAllDrivingLicenses() {
         List<DrivingLicense> drivingLicenses = new ArrayList<>();
         open();

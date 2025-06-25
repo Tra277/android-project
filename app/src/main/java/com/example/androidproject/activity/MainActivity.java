@@ -1,6 +1,7 @@
 package com.example.androidproject.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
@@ -24,7 +25,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        //dbHelper.populateInitialData();
+        dbHelper.populateInitialData();
         setSupportActionBar(toolbar);
         toolbar.setTitle("600 câu hỏi ôn thi GPLX");
         toolbar.setNavigationIcon(null); // ←
@@ -45,8 +46,8 @@ public class MainActivity extends BaseActivity {
             startActivity(intent);
         });
         btnExamSet.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
-            startActivity(intent);
+            Intent intent1 = new Intent(MainActivity.this, ExamSetActivity.class);
+            startActivity(intent1);
         });
         btnCriticalQuiz.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, QuizActivity.class);
