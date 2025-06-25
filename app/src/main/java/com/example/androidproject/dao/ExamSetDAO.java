@@ -70,11 +70,11 @@ public class ExamSetDAO {
         return examSets;
     }
 
-    public List<ExamSet> getExamSetsByLicenseCode(int licenseId) {
+    public List<ExamSet> getExamSetsByLicenseCodeAndIsShowed(int licenseId) {
         List<ExamSet> examSets = new ArrayList<>();
         open();
-        Cursor cursor = database.query("ExamSet", null, "license_id = ?",
-                new String[]{String.valueOf(licenseId)}, null, null, null);
+        Cursor cursor = database.query("ExamSet", null, "license_id = ? AND is_showed = ?",
+                new String[]{String.valueOf(licenseId), "1"}, null, null, null);
 
         if (cursor.moveToFirst()) {
             do {

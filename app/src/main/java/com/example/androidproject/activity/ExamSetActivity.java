@@ -39,12 +39,12 @@ public class ExamSetActivity extends AppCompatActivity {
         drivingLicenseDAO = new DrivingLicenseDAO(this);
         examSetDAO = new ExamSetDAO(this);
         //Get license shared preferences
-        SharedPreferences prefs = getSharedPreferences("data", MODE_PRIVATE);
-        String license_code = prefs.getString("license_code", "A1");
+        SharedPreferences prefs = getSharedPreferences("LicensePrefs", MODE_PRIVATE);
+        String license_code = prefs.getString("selectedLicenseCode", "A1");
         DrivingLicense license = drivingLicenseDAO.getDrivingLicenseByCode(license_code);
         examSetList = new ArrayList<>();
         // Add sample data
-        examSetList = examSetDAO.getExamSetsByLicenseCode(license.getId());
+        examSetList = examSetDAO.getExamSetsByLicenseCodeAndIsShowed(license.getId());
         examSetAdapter = new ExamSetAdapter(this, examSetList);
         examSetRecyclerView.setAdapter(examSetAdapter);
     }
