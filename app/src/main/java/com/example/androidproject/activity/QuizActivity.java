@@ -16,6 +16,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.androidproject.OnAnswerSubmittedListener;
 import com.example.androidproject.R;
+import com.example.androidproject.activity.fragment.QuestionBottomSheetFragment;
 import com.example.androidproject.adapter.QuestionPagerAdapter;
 import com.example.androidproject.dao.ExamSetDAO;
 import com.example.androidproject.dao.ExamSetQuestionDAO;
@@ -183,6 +184,8 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.show_question) {
                 Toast.makeText(this, "Show question", Toast.LENGTH_SHORT).show();
+                QuestionBottomSheetFragment bottomSheet = new QuestionBottomSheetFragment();
+                bottomSheet.show(getSupportFragmentManager(), "QuestionBottomSheet");
                 return true;
             }
             return false;
@@ -190,6 +193,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
 
 
     }
+
     private void submitQuiz() {
         if (countDownTimer != null) {
             countDownTimer.cancel();
