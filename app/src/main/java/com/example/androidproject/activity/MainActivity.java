@@ -65,7 +65,7 @@ public class MainActivity extends BaseActivity {
             startActivity(intent);
         });
         btnQuizPractice.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
+            Intent intent = new Intent(MainActivity.this, ExamCategoryActivity.class);
             startActivity(intent);
         });
         toolbar.setOnMenuItemClickListener(item -> {

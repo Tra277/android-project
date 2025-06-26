@@ -13,9 +13,11 @@
         android:theme="@style/Theme.AndroidProject"
         tools:targetApi="31">
         <activity
+            android:name=".activity.ExamCategoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.ExamSetActivity"
             android:exported="false" />
-
         <activity
             android:name=".activity.BaseActivity"
             android:exported="false" />
