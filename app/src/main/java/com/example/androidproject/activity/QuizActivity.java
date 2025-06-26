@@ -1,3 +1,4 @@
+
 package com.example.androidproject.activity;
 
 import android.app.AlertDialog;
@@ -33,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListener {
+public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListener, QuestionBottomSheetFragment.OnQuestionSelectedListener {
 
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
@@ -205,7 +206,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.show_question) {
                 Toast.makeText(this, "Show question", Toast.LENGTH_SHORT).show();
-                QuestionBottomSheetFragment bottomSheet = new QuestionBottomSheetFragment();
+                QuestionBottomSheetFragment bottomSheet = QuestionBottomSheetFragment.newInstance(new ArrayList<>(questions));
                 bottomSheet.show(getSupportFragmentManager(), "QuestionBottomSheet");
                 return true;
             }
@@ -302,5 +303,10 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.top_app_bar_exam, menu);
         return true;
+    }
+
+    @Override
+    public void onQuestionSelected(int position) {
+        viewPager.setCurrentItem(position, true); // Smooth scroll to the selected question
     }
 }
