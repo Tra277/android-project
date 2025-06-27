@@ -100,13 +100,31 @@ public class QuestionDAO {
         open();
         String query = "SELECT * FROM Question ORDER BY RANDOM() LIMIT 25";
         Cursor cursor = database.rawQuery(query, null);
-
         if (cursor.moveToFirst()) {
             do {
                 questions.add(cursorToQuestion(cursor));
             } while (cursor.moveToNext());
         }
+        cursor.close();
+        close();
+        return questions;
+    }
 
+    //get random 25 questions by license ID
+    public List<Question> getRandomQuestions(int licenseId) {
+        List<Question> questions = new ArrayList<>();
+        open();
+        String query = "SELECT q.* FROM Question q " +
+                "INNER JOIN Category c ON q.category_id = c.id " +
+                "INNER JOIN DrivingLicense dl ON c.license_id = dl.id " +
+                "WHERE dl.id = ? " +
+                "ORDER BY RANDOM() LIMIT 25";
+        Cursor cursor = database.rawQuery(query, new String[]{String.valueOf(licenseId)});
+        if (cursor.moveToFirst()) {
+            do {
+                questions.add(cursorToQuestion(cursor));
+            } while (cursor.moveToNext());
+        }
         cursor.close();
         close();
         return questions;
@@ -117,7 +135,6 @@ public class QuestionDAO {
         open();
         Cursor cursor = database.query("Question", null, "category_id = ?",
                 new String[]{String.valueOf(categoryId)}, null, null, null);
-
         if (cursor.moveToFirst()) {
             do {
                 questions.add(cursorToQuestion(cursor));
@@ -160,6 +177,25 @@ public class QuestionDAO {
         return questions;
     }
 
+    public List<Question> getQuestionsByStatus(String status, int licenseId) {
+        List<Question> questions = new ArrayList<>();
+        open();
+        String query = "SELECT q.* FROM Question q " +
+                "INNER JOIN Category c ON q.category_id = c.id " +
+                "INNER JOIN DrivingLicense dl ON c.license_id = dl.id " +
+                "WHERE q.question_status = ? AND dl.id = ?";
+        Cursor cursor = database.rawQuery(query, new String[]{status, String.valueOf(licenseId)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                questions.add(cursorToQuestion(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        close();
+        return questions;
+    }
+
     public List<Question> getCriticalQuestions() {
         List<Question> questions = new ArrayList<>();
         open();
@@ -176,11 +212,49 @@ public class QuestionDAO {
         return questions;
     }
 
+    public List<Question> getCriticalQuestions(int licenseId) {
+        List<Question> questions = new ArrayList<>();
+        open();
+        String query = "SELECT q.* FROM Question q " +
+                "INNER JOIN Category c ON q.category_id = c.id " +
+                "INNER JOIN DrivingLicense dl ON c.license_id = dl.id " +
+                "WHERE q.is_critical_quiz = 1 AND dl.id = ?";
+        Cursor cursor = database.rawQuery(query, new String[]{String.valueOf(licenseId)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                questions.add(cursorToQuestion(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        close();
+        return questions;
+    }
+
     public List<Question> getConfusingQuestions() {
         List<Question> questions = new ArrayList<>();
         open();
         Cursor cursor = database.query("Question", null, "is_confusing_quiz = 1",
                 null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                questions.add(cursorToQuestion(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        close();
+        return questions;
+    }
+
+    public List<Question> getConfusingQuestions(int licenseId) {
+        List<Question> questions = new ArrayList<>();
+        open();
+        String query = "SELECT q.* FROM Question q " +
+                "INNER JOIN Category c ON q.category_id = c.id " +
+                "INNER JOIN DrivingLicense dl ON c.license_id = dl.id " +
+                "WHERE q.is_confusing_quiz = 1 AND dl.id = ?";
+        Cursor cursor = database.rawQuery(query, new String[]{String.valueOf(licenseId)});
 
         if (cursor.moveToFirst()) {
             do {

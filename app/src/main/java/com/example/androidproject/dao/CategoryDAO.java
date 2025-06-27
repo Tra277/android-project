@@ -113,4 +113,43 @@ public class CategoryDAO {
         category.setLicenseId(cursor.getInt(cursor.getColumnIndexOrThrow("license_id")));
         return category;
     }
+
+    public List<Category> getCategoriesWithQuestionCountsByLicenseId(int licenseId) {
+        List<Category> categories = new ArrayList<>();
+        open();
+        Cursor cursor = database.query("Category", null, "license_id = ?",
+                new String[]{String.valueOf(licenseId)}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Category category = cursorToCategory(cursor);
+                int categoryId = category.getId();
+
+                // Get total questions for this category
+                Cursor totalQuestionsCursor = database.rawQuery(
+                        "SELECT COUNT(*) FROM Question WHERE category_id = ?",
+                        new String[]{String.valueOf(categoryId)}
+                );
+                if (totalQuestionsCursor.moveToFirst()) {
+                    category.setTotalQuestions(totalQuestionsCursor.getInt(0));
+                }
+                totalQuestionsCursor.close();
+
+                // Get done questions for this category (status 'correct' or 'incorrect')
+                Cursor doneQuestionsCursor = database.rawQuery(
+                        "SELECT COUNT(*) FROM Question WHERE category_id = ? AND (question_status = 'correct' OR question_status = 'incorrect')",
+                        new String[]{String.valueOf(categoryId)}
+                );
+                if (doneQuestionsCursor.moveToFirst()) {
+                    category.setDoneQuestions(doneQuestionsCursor.getInt(0));
+                }
+                doneQuestionsCursor.close();
+
+                categories.add(category);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        close();
+        return categories;
+    }
 }

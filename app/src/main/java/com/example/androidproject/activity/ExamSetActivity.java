@@ -27,11 +27,12 @@ public class ExamSetActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exam_set);
-
+        SharedPreferences prefs = getSharedPreferences("LicensePrefs", MODE_PRIVATE);
+        String license_code = prefs.getString("selectedLicenseCode", "A1");
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Đề thi Hạng A1");
+        getSupportActionBar().setTitle("Đề thi Hạng" + license_code);
 
         examSetRecyclerView = findViewById(R.id.examSetRecyclerView);
         examSetRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
@@ -39,8 +40,7 @@ public class ExamSetActivity extends AppCompatActivity {
         drivingLicenseDAO = new DrivingLicenseDAO(this);
         examSetDAO = new ExamSetDAO(this);
         //Get license shared preferences
-        SharedPreferences prefs = getSharedPreferences("LicensePrefs", MODE_PRIVATE);
-        String license_code = prefs.getString("selectedLicenseCode", "A1");
+
         DrivingLicense license = drivingLicenseDAO.getDrivingLicenseByCode(license_code);
         examSetList = new ArrayList<>();
         // Add sample data
