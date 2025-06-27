@@ -84,7 +84,7 @@ public class LicenseActivity extends BaseActivity {
         adapter = new LicensesAdapter(licenseCategoryItems, (position, item) -> {
             Toast.makeText(this, "Clicked: " + item.getTitle(), Toast.LENGTH_SHORT).show();
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-            prefs.edit().putString(KEY_SELECTED_LICENSE_CODE, item.getShortCode()).apply(); // Lưu code
+            prefs.edit().putString(KEY_SELECTED_LICENSE_CODE, item.getTitle()).apply(); // Lưu code
             adapter.setSelectedItem(position); // Cập nhật item được chọn
         });
         recyclerView.setAdapter(adapter);

@@ -44,7 +44,7 @@ public class ExamCategoryActivity extends AppCompatActivity implements CategoryA
         setSupportActionBar(topAppBar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_burger_menu); // Or your back arrow icon
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_exit); // Or your back arrow icon
         }
 
         categoriesRecyclerView = findViewById(R.id.categoriesRecyclerView);
@@ -56,6 +56,10 @@ public class ExamCategoryActivity extends AppCompatActivity implements CategoryA
         licenseCode = prefs.getString("selectedLicenseCode", "A1");
         DrivingLicenseDAO drivingLicenseDAO = new DrivingLicenseDAO(this);
         DrivingLicense license = drivingLicenseDAO.getDrivingLicenseByCode(licenseCode);
+        if (license == null) {
+            Log.e("ExamCategoryActivity", "License not found for code: " + licenseCode);
+            return;
+        }
         licenseId = license.getId();
         loadCategories();
     }
