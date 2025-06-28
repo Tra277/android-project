@@ -159,6 +159,9 @@ public class ResultActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed(); // Call superclass method
         // Do nothing
     }
 }
+
+

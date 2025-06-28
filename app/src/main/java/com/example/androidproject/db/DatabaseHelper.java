@@ -11,18 +11,23 @@ import com.example.androidproject.dao.DrivingLicenseDAO;
 import com.example.androidproject.dao.ExamSetDAO;
 import com.example.androidproject.dao.ExamSetQuestionDAO;
 import com.example.androidproject.dao.QuestionDAO;
+import com.example.androidproject.dao.TrafficSignCategoryDAO;
+import com.example.androidproject.dao.TrafficSignDAO;
 import com.example.androidproject.model.Answer;
 import com.example.androidproject.model.Category;
 import com.example.androidproject.model.DrivingLicense;
 import com.example.androidproject.model.ExamSet;
 import com.example.androidproject.model.ExamSetQuestion;
 import com.example.androidproject.model.Question;
+import com.example.androidproject.model.TrafficSign;
+import com.example.androidproject.model.TrafficSignCategory;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "QuizApp.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
     private Context context;
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
@@ -55,7 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "is_critical_quiz INTEGER NOT NULL," +       // BOOLEAN as INTEGER 0 or 1
                 "is_confusing_quiz INTEGER NOT NULL," +
                 "question_explanation TEXT NOT NULL," +
-                "question_status TEXT CHECK(question_status IN ('correct', 'incorrect', 'not_yet_done')) NOT NULL," +
+                "question_status TEXT CHECK(question_status IN (\'correct\', \'incorrect\', \'not_yet_done\')) NOT NULL," +
                 "category_id INTEGER NOT NULL," +
                 "FOREIGN KEY (category_id) REFERENCES Category(id)" +
                 ")");
@@ -90,6 +95,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "FOREIGN KEY (question_id) REFERENCES Question(id)," +
                 "FOREIGN KEY (exam_set_id) REFERENCES ExamSet(id)" +
                 ")");
+
+        // Create TrafficSignCategory table
+        db.execSQL("CREATE TABLE TrafficSignCategory (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "name TEXT NOT NULL UNIQUE" +
+                ")");
+
+        // Create TrafficSign table
+        db.execSQL("CREATE TABLE TrafficSign (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "code TEXT NOT NULL UNIQUE," +
+                "name TEXT NOT NULL," +
+                "description TEXT NOT NULL," +
+                "image_path TEXT NOT NULL," +
+                "category_id INTEGER NOT NULL," +
+                "FOREIGN KEY (category_id) REFERENCES TrafficSignCategory(id)" +
+                ")");
     }
 
     @Override
@@ -101,15 +123,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS Category");
         db.execSQL("DROP TABLE IF EXISTS ExamSet");
         db.execSQL("DROP TABLE IF EXISTS DrivingLicense");
+        db.execSQL("DROP TABLE IF EXISTS TrafficSign");
+        db.execSQL("DROP TABLE IF EXISTS TrafficSignCategory");
         // Recreate tables
         onCreate(db);
     }
+
     private int getCategoryIdByName(String name, CategoryDAO categoryDAO) {
         for (Category cat : categoryDAO.getAllCategories()) {
             if (cat.getName().equals(name)) return cat.getId();
         }
         return -1; // Handle error case
     }
+
     public void populateInitialData() {
         SQLiteDatabase db = this.getWritableDatabase();
         if (DatabaseUtils.queryNumEntries(db, "DrivingLicense") == 0) {
@@ -171,5 +197,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 examSetQuestionDAO.insertExamSetQuestion(eq);
             }
         }
+
+        // Populate TrafficSign data if table is empty
+        if (DatabaseUtils.queryNumEntries(db, "TrafficSignCategory") == 0) {
+            TrafficSignCategoryDAO trafficSignCategoryDAO = new TrafficSignCategoryDAO(context);
+            TrafficSignDAO trafficSignDAO = new TrafficSignDAO(context);
+
+            // Insert initial TrafficSignCategories
+            long categoryCamId = trafficSignCategoryDAO.insertTrafficSignCategory(new TrafficSignCategory("Biển Báo Cấm"));
+            long categoryNguyHiemId = trafficSignCategoryDAO.insertTrafficSignCategory(new TrafficSignCategory("Biển Báo Nguy Hiểm"));
+            long categoryHieuLenhId = trafficSignCategoryDAO.insertTrafficSignCategory(new TrafficSignCategory("Biển Hiệu Lệnh"));
+            long categoryChiDanId = trafficSignCategoryDAO.insertTrafficSignCategory(new TrafficSignCategory("Biển Chỉ Dẫn"));
+
+            // Insert initial TrafficSigns
+            trafficSignDAO.insertTrafficSign(new TrafficSign("P.101", "Đường cấm", "Biển báo đường cấm tất cả các loại phương tiện tham gia giao thông đi lại cả hai hướng, trừ xe ưu tiên theo luật định.", "p101", (int) categoryCamId));
+            trafficSignDAO.insertTrafficSign(new TrafficSign("P.102", "Cấm đi ngược chiều", "Biển báo đường cấm tất cả các loại phương tiện tham gia giao thông đi vào theo chiều đặt biển.", "p102", (int) categoryCamId));
+            trafficSignDAO.insertTrafficSign(new TrafficSign("P.103a", "Cấm ô tô", "Biển báo đường cấm tất cả các loại xe cơ giới kể cả mô tô 3 bánh có thùng đi qua, trừ xe ưu tiên theo Luật Giao thông đường bộ.", "p103a", (int) categoryCamId));
+            trafficSignDAO.insertTrafficSign(new TrafficSign("P.103b", "Cấm ô tô rẽ phải", "Biển báo đường cấm xe ô tô rẽ phải (kể cả xe mô tô ba bánh), trừ các xe được ưu tiên theo Luật Giao thông đường bộ.", "p103b", (int) categoryCamId));
+            trafficSignDAO.insertTrafficSign(new TrafficSign("P.103c", "Cấm ô tô rẽ trái", "Biển báo đường cấm xe ô tô rẽ trái (kể cả xe mô tô ba bánh), trừ các xe được ưu tiên theo Luật Giao thông đường bộ.", "p103c", (int) categoryCamId));
+            trafficSignDAO.insertTrafficSign(new TrafficSign("P.104", "Cấm mô tô", "Biển báo đường cấm mô tô.", "p104", (int) categoryCamId));
+
+            trafficSignDAO.insertTrafficSign(new TrafficSign("W.201a", "Chỗ ngoặt nguy hiểm bên trái", "Báo hiệu phía trước có chỗ ngoặt nguy hiểm vòng sang trái.", "w201a", (int) categoryNguyHiemId));
+            trafficSignDAO.insertTrafficSign(new TrafficSign("W.201b", "Chỗ ngoặt nguy hiểm bên phải", "Báo hiệu phía trước có chỗ ngoặt nguy hiểm vòng sang phải.", "w201b", (int) categoryNguyHiemId));
+            trafficSignDAO.insertTrafficSign(new TrafficSign("W.202", "Nhiều chỗ ngoặt nguy hiểm liên tiếp", "Báo hiệu phía trước có nhiều chỗ ngoặt nguy hiểm liên tiếp.", "w202", (int) categoryNguyHiemId));
+
+            trafficSignDAO.insertTrafficSign(new TrafficSign("R.301a", "Hướng đi thẳng phải theo", "Báo hiệu các loại xe (cơ giới và thô sơ) phải đi thẳng.", "r301a", (int) categoryHieuLenhId));
+            trafficSignDAO.insertTrafficSign(new TrafficSign("R.301b", "Hướng đi rẽ phải phải theo", "Báo hiệu các loại xe (cơ giới và thô sơ) phải rẽ phải.", "r301b", (int) categoryHieuLenhId));
+
+            trafficSignDAO.insertTrafficSign(new TrafficSign("I.401", "Bắt đầu đường ưu tiên", "Báo hiệu bắt đầu đoạn đường ưu tiên.", "i401", (int) categoryChiDanId));
+            trafficSignDAO.insertTrafficSign(new TrafficSign("I.402", "Hết đường ưu tiên", "Báo hiệu hết đoạn đường ưu tiên.", "i402", (int) categoryChiDanId));
+            trafficSignDAO.insertTrafficSign(new TrafficSign("W.201c", "Chỗ ngoặt nguy hiểm bên trái và bên phải", "Báo hiệu phía trước có chỗ ngoặt nguy hiểm vòng sang trái và vòng sang phải.", "w201c", (int) categoryNguyHiemId));
+        }
     }
 }
+
+

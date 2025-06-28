@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_traffic_signs"
+    app:startDestination="@id/signsDashboardFragment">
+
+    <fragment
+        android:id="@+id/signsDashboardFragment"
+        android:name="com.example.androidproject.activity.fragment.SignsDashboardFragment"
+        android:label="SignsDashboardFragment" >
+        <action
+            android:id="@+id/action_signsDashboardFragment_to_signListFragment"
+            app:destination="@id/signListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signListFragment"
+        android:name="com.example.androidproject.activity.fragment.SignListFragment"
+        android:label="SignListFragment" >
+        <argument
+            android:name="categoryId"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_signListFragment_to_signDetailFragment"
+            app:destination="@id/signDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signDetailFragment"
+        android:name="com.example.androidproject.activity.fragment.SignDetailFragment"
+        android:label="SignDetailFragment" >
+        <argument
+            android:name="signId"
+            app:argType="integer" />
+    </fragment>
+</navigation>
+

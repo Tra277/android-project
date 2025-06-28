@@ -17,7 +17,7 @@ import com.example.androidproject.db.DatabaseHelper;
 
 public class MainActivity extends BaseActivity {
     ImageView imageView;
-    Button btnRandomExam, btnExamSet, btnCriticalQuiz, btnTopWQuiz,btnWQuizReview,btnQuizPractice;
+    Button btnRandomExam, btnExamSet, btnCriticalQuiz, btnTopWQuiz,btnWQuizReview,btnQuizPractice, btnTrafficSigns;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,9 +36,10 @@ public class MainActivity extends BaseActivity {
         btnRandomExam = findViewById(R.id.btnRandomExam);
         btnExamSet = findViewById(R.id.btnExamSet);
         btnCriticalQuiz = findViewById(R.id.btnCriticalQuiz);
-        btnTopWQuiz = findViewById(R.id.btnTopWQuiz);
+//        btnTopWQuiz = findViewById(R.id.btnTopWQuiz);
         btnWQuizReview = findViewById(R.id.btnWQuizReview);
         btnQuizPractice = findViewById(R.id.btnQuizPractice);
+        btnTrafficSigns = findViewById(R.id.btnTrafficSigns);
 
         btnRandomExam.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, QuizActivity.class);
@@ -54,11 +55,11 @@ public class MainActivity extends BaseActivity {
             intent.putExtra("quiz_mode", "critical_quiz");
             startActivity(intent);
         });
-        btnTopWQuiz.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
-            intent.putExtra("quiz_mode", "top_wquiz");
-            startActivity(intent);
-        });
+//        btnTopWQuiz.setOnClickListener(v -> {
+//            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
+//            intent.putExtra("quiz_mode", "top_wquiz");
+//            startActivity(intent);
+//        });
         btnWQuizReview.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, QuizActivity.class);
             intent.putExtra("quiz_mode", "wquiz_review");
@@ -66,6 +67,10 @@ public class MainActivity extends BaseActivity {
         });
         btnQuizPractice.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ExamCategoryActivity.class);
+            startActivity(intent);
+        });
+        btnTrafficSigns.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SignsDashboardActivity.class);
             startActivity(intent);
         });
         toolbar.setOnMenuItemClickListener(item -> {
@@ -100,21 +105,7 @@ public class MainActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
-        //dbHelper.populateInitialData();
-//        imageView = findViewById(R.id.imageView);
-//        String imageName = "truy_kich";
-//
-//// Get the resource ID dynamically
-//        int resId = getResources().getIdentifier(imageName, "drawable", getPackageName());
-//
-//// Check if it exists
-//        if (resId != 0) {
-//            imageView.setImageResource(resId);
-//        } else {
-////            // Handle missing image (fallback or error)
-////            imageView.setImageResource(R.drawable.placeholder);
-//        }
-
-
     }
 }
+
+
