@@ -14,6 +14,7 @@ import androidx.activity.EdgeToEdge;
 
 import com.example.androidproject.R;
 import com.example.androidproject.db.DatabaseHelper;
+import com.google.android.material.button.MaterialButton;
 
 public class MainActivity extends BaseActivity {
     ImageView imageView;
@@ -32,6 +33,11 @@ public class MainActivity extends BaseActivity {
 
         toolbar.inflateMenu(R.menu.top_app_bar_menu); // menu góc phải
 
+        MaterialButton quickTipsBtn = findViewById(R.id.btn_quick_tips);
+        quickTipsBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, QuickTipsActivity.class);
+            startActivity(intent);
+        });
 
         btnRandomExam = findViewById(R.id.btnRandomExam);
         btnExamSet = findViewById(R.id.btnExamSet);
@@ -65,6 +71,7 @@ public class MainActivity extends BaseActivity {
             intent.putExtra("quiz_mode", "wquiz_review");
             startActivity(intent);
         });
+
         btnQuizPractice.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ExamCategoryActivity.class);
             startActivity(intent);

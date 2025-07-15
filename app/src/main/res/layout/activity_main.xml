@@ -114,6 +114,27 @@
                     app:iconPadding="8dp"
                     app:iconSize="50dp"
                     app:iconTint="@color/white" />
+
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_quick_tips"
+                    style="@style/CustomButton.Purple"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📌 Mẹo thi nhanh"
+                    app:icon="@drawable/ic_tips"
+                app:iconGravity="top"
+                app:iconPadding="8dp"
+                app:iconSize="50dp"
+                app:iconTint="@color/white" />
+
             </TableRow>
 
         </TableLayout>
