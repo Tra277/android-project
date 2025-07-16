@@ -61,10 +61,8 @@ public class QuestionBottomSheetFragment extends BottomSheetDialogFragment imple
         questionGridRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 6)); // 6 columns
         QuestionGridAdapter adapter = new QuestionGridAdapter(questionList, this);
         questionGridRecyclerView.setAdapter(adapter);
-
         Button btnSheetClose = view.findViewById(R.id.btn_sheet_close);
         btnSheetClose.setOnClickListener(v -> dismiss());
-
         return view;
     }
 

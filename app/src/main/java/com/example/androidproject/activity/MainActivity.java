@@ -25,18 +25,15 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        dbHelper.populateInitialData();
+        //dbHelper.populateInitialData();
         setSupportActionBar(toolbar);
         toolbar.setTitle("600 câu hỏi ôn thi GPLX");
         toolbar.setNavigationIcon(null); // ←
-
         toolbar.inflateMenu(R.menu.top_app_bar_menu); // menu góc phải
-
-
         btnRandomExam = findViewById(R.id.btnRandomExam);
         btnExamSet = findViewById(R.id.btnExamSet);
         btnCriticalQuiz = findViewById(R.id.btnCriticalQuiz);
-//        btnTopWQuiz = findViewById(R.id.btnTopWQuiz);
+        //btnTopWQuiz = findViewById(R.id.btnTopWQuiz);
         btnWQuizReview = findViewById(R.id.btnWQuizReview);
         btnQuizPractice = findViewById(R.id.btnQuizPractice);
         btnTrafficSigns = findViewById(R.id.btnTrafficSigns);
@@ -85,7 +82,6 @@ public class MainActivity extends BaseActivity {
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.top_app_bar_menu, menu);
@@ -95,7 +91,6 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.action_settings) {
             // Xử lý khi nhấn vào menu cài đặt
             // Ví dụ: Mở màn hình cài đặt
@@ -103,7 +98,6 @@ public class MainActivity extends BaseActivity {
             // startActivity(intent);
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }
