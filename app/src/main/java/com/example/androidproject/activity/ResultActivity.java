@@ -118,13 +118,13 @@ public class ResultActivity extends BaseActivity {
         questionsGridView.setAdapter(adapter);
 
         questionsGridView.setOnItemClickListener((parent, view, position, id) -> {
-            Question question = questions.get(position);
-            new AlertDialog.Builder(this)
-                    .setTitle(question.getContent())
-                    .setMessage(question.getQuestionExplanation())
-                    .setPositiveButton("OK", null)
-                    .show();
+            Intent detailIntent = new Intent(ResultActivity.this, QuizActivity.class);
+            detailIntent.putExtra("question_position", position);
+            detailIntent.putParcelableArrayListExtra("questions", new ArrayList<>(questions)); // Pass the entire list of questions
+            detailIntent.putExtra("is_review_mode", true); // Indicate that this is a review session
+            startActivity(detailIntent);
         });
+
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_settings) {
                 Intent licenseIntent = new Intent(ResultActivity.this, LicenseActivity.class);
@@ -163,5 +163,3 @@ public class ResultActivity extends BaseActivity {
         // Do nothing
     }
 }
-
-

@@ -145,6 +145,15 @@ public class QuestionDAO {
         return questions;
     }
 
+    public int updateQuestionSelectedAnswerId(int questionId, int selectedAnswerId) {
+        open();
+        ContentValues values = new ContentValues();
+        values.put("selected_answer_id", selectedAnswerId);
+        int rowsAffected = database.update("Question", values, "id = ?", new String[]{String.valueOf(questionId)});
+        close();
+        return rowsAffected;
+    }
+
     public List<Question> getQuestionsByCategoryAndStatus(int categoryId, String status) {
         List<Question> questions = new ArrayList<>();
         open();

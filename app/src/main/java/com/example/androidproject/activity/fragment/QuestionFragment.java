@@ -134,6 +134,7 @@ public class QuestionFragment extends Fragment {
                         .orElse(null);
                 if (selectedAnswer != null && listener != null) {
                     String status = selectedAnswer.isCorrect() ? "correct" : "incorrect";
+                    questionDAO.updateQuestionSelectedAnswerId(question.getId(), answerId);
                     listener.onAnswerSubmitted(question.getId(), status);
                 }
             }

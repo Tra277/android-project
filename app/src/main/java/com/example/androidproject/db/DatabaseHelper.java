@@ -61,6 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "is_confusing_quiz INTEGER NOT NULL," +
                 "question_explanation TEXT NOT NULL," +
                 "question_status TEXT CHECK(question_status IN (\'correct\', \'incorrect\', \'not_yet_done\')) NOT NULL," +
+                "selected_answer_id INTEGER," +
                 "category_id INTEGER NOT NULL," +
                 "FOREIGN KEY (category_id) REFERENCES Category(id)" +
                 ")");
