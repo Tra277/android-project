@@ -14,15 +14,22 @@ import java.util.List;
 public class QuestionPagerAdapter extends FragmentStateAdapter {
     private List<Question> questions;
 
-    public QuestionPagerAdapter(FragmentActivity fragmentActivity, List<Question> questions) {
+    private boolean isReviewMode;
+    private QuestionDAO questionDAO;
+
+    public QuestionPagerAdapter(FragmentActivity fragmentActivity, List<Question> questions, boolean isReviewMode) {
         super(fragmentActivity);
         this.questions = questions;
+        this.isReviewMode = isReviewMode;
+        this.questionDAO = new QuestionDAO(fragmentActivity);
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return QuestionFragment.newInstance(questions.get(position).getId());
+        Question question = questions.get(position);
+        int selectedAnswerId = questionDAO.getQuestionById(question.getId()).getSelectedAnswerId();
+        return QuestionFragment.newInstance(question.getId(), isReviewMode, selectedAnswerId);
     }
 
     @Override

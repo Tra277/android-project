@@ -39,6 +39,7 @@ public class QuestionDAO {
         values.put("question_explanation", question.getQuestionExplanation());
         values.put("question_status", question.getQuestionStatus());
         values.put("category_id", question.getCategoryId());
+        values.put("selected_answer_id", question.getSelectedAnswerId());
 
         long id = database.insert("Question", null, values);
         close();
@@ -143,6 +144,15 @@ public class QuestionDAO {
         cursor.close();
         close();
         return questions;
+    }
+
+    public int updateQuestionSelectedAnswerId(int questionId, int selectedAnswerId) {
+        open();
+        ContentValues values = new ContentValues();
+        values.put("selected_answer_id", selectedAnswerId);
+        int rowsAffected = database.update("Question", values, "id = ?", new String[]{String.valueOf(questionId)});
+        close();
+        return rowsAffected;
     }
 
     public List<Question> getQuestionsByCategoryAndStatus(int categoryId, String status) {
@@ -277,6 +287,7 @@ public class QuestionDAO {
         values.put("question_explanation", question.getQuestionExplanation());
         values.put("question_status", question.getQuestionStatus());
         values.put("category_id", question.getCategoryId());
+        values.put("selected_answer_id", question.getSelectedAnswerId());
 
         int rowsAffected = database.update("Question", values, "id = ?",
                 new String[]{String.valueOf(question.getId())});
@@ -303,6 +314,7 @@ public class QuestionDAO {
         question.setQuestionExplanation(cursor.getString(cursor.getColumnIndexOrThrow("question_explanation")));
         question.setQuestionStatus(cursor.getString(cursor.getColumnIndexOrThrow("question_status")));
         question.setCategoryId(cursor.getInt(cursor.getColumnIndexOrThrow("category_id")));
+        question.setSelectedAnswerId(cursor.getInt(cursor.getColumnIndexOrThrow("selected_answer_id")));
         return question;
     }
 }
