@@ -85,8 +85,16 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
 
         if (receivedQuestions != null && !receivedQuestions.isEmpty()) {
             questions = receivedQuestions;
-            // No need to fetch from DAO if questions are passed from ResultActivity
-            // Also, no need to create a new ExamSet or ExamSetQuestions as this is a review
+            if (isReviewMode) {
+                // In review mode, ensure selectedAnswerId is loaded for each question
+                for (int i = 0; i < questions.size(); i++) {
+                    Question originalQuestion = questions.get(i);
+                    Question updatedQuestion = questionDAO.getQuestionById(originalQuestion.getId());
+                    if (updatedQuestion != null) {
+                        questions.set(i, updatedQuestion); // Update the question object in the list
+                    }
+                }
+            }
         } else {
             String quizMode = intent.getStringExtra("quiz_mode");
 

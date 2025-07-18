@@ -20,7 +20,7 @@ public class Question implements Parcelable {
 
     public Question(int id, String content, String imagePath, boolean isCriticalQuiz,
                     boolean isConfusingQuiz, String questionExplanation,
-                    String questionStatus, int categoryId) {
+                    String questionStatus, int categoryId, int selectedAnswerId) {
         this.id = id;
         this.content = content;
         this.imagePath = imagePath;
@@ -29,6 +29,7 @@ public class Question implements Parcelable {
         this.questionExplanation = questionExplanation;
         this.questionStatus = questionStatus;
         this.categoryId = categoryId;
+        this.selectedAnswerId = selectedAnswerId;
     }
 
     // Getters and Setters
