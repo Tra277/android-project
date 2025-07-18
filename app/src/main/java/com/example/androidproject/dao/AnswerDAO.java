@@ -40,7 +40,21 @@ public class AnswerDAO {
         return id;
     }
 
-    public Answer getAnswerById(int id) {
+    public Answer getCorrectAnswerByQuestionId(int questionId) {
+        open();
+        Cursor cursor = database.query("Answer", null, "question_id = ? AND is_correct = 1",
+                new String[]{String.valueOf(questionId)}, null, null, null);
+
+        Answer answer = null;
+        if (cursor.moveToFirst()) {
+            answer = cursorToAnswer(cursor);
+        }
+        cursor.close();
+        close();
+        return answer;
+    }
+
+        public Answer getAnswerById(int id) {
         open();
         Cursor cursor = database.query("Answer", null, "id = ?",
                 new String[]{String.valueOf(id)}, null, null, null);
@@ -53,6 +67,7 @@ public class AnswerDAO {
         close();
         return answer;
     }
+
 
     public List<Answer> getAllAnswers() {
         List<Answer> answers = new ArrayList<>();

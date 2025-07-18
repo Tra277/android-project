@@ -120,7 +120,9 @@ public class ResultActivity extends BaseActivity {
         questionsGridView.setOnItemClickListener((parent, view, position, id) -> {
             Intent detailIntent = new Intent(ResultActivity.this, QuizActivity.class);
             detailIntent.putExtra("question_position", position);
-            detailIntent.putParcelableArrayListExtra("questions", new ArrayList<>(questions)); // Pass the entire list of questions
+            // Ensure that the questions list passed to QuizActivity in review mode contains the selectedAnswerId
+            // The questions list already contains the selectedAnswerId from the QuizActivity when it was submitted.
+            detailIntent.putParcelableArrayListExtra("questions", new ArrayList<>(questions));
             detailIntent.putExtra("is_review_mode", true); // Indicate that this is a review session
             startActivity(detailIntent);
         });

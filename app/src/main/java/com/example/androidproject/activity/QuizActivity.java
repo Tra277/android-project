@@ -60,7 +60,13 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
 
         setSupportActionBar(toolbar);
         toolbar.setTitle("Bài thi");
-        toolbar.setNavigationIcon(null); // ←
+        boolean isReviewMode = getIntent().getBooleanExtra("is_review_mode", false);
+        if (isReviewMode) {
+            toolbar.setNavigationIcon(R.drawable.ic_exit); // Set back arrow icon
+            toolbar.setNavigationOnClickListener(v -> onBackPressed()); // Handle back button click
+        } else {
+            toolbar.setNavigationIcon(null); // No back arrow in quiz mode
+        }
         toolbar.inflateMenu(R.menu.top_app_bar_exam);
         // Initialize views
         tabLayout = findViewById(R.id.tab_layout);
@@ -179,8 +185,9 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
                 .filter(q -> !q.getQuestionStatus().equals("not_yet_done"))
                 .count();
 
+
         // Set up ViewPager and TabLayout
-        QuestionPagerAdapter adapter = new QuestionPagerAdapter(this,questions);
+        QuestionPagerAdapter adapter = new QuestionPagerAdapter(this, questions, isReviewMode);
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> tab.setText("Câu " + (position + 1)))
@@ -191,7 +198,6 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
             viewPager.setCurrentItem(initialPosition, false); // Set to the specific question
         }
 
-        boolean isReviewMode = intent.getBooleanExtra("is_review_mode", false);
         if (isReviewMode) {
             tvTimer.setVisibility(View.GONE);
             btnSubmitQuiz.setVisibility(View.GONE);
@@ -224,7 +230,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
             });
         }
 
-    // drawer
+        // drawer
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.show_question) {
                 Toast.makeText(this, "Show question", Toast.LENGTH_SHORT).show();

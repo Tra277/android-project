@@ -31,17 +31,25 @@ import java.util.List;
 
 public class QuestionFragment extends Fragment {
     private static final String ARG_QUESTION_ID = "question_id";
+    private static final String ARG_IS_REVIEW_MODE = "is_review_mode";
+    private static final String ARG_SELECTED_ANSWER_ID = "selected_answer_id";
+
     private QuestionDAO questionDAO;
     private AnswerDAO answerDAO;
     private Question question;
     private List<Answer> answers;
     private OnAnswerSubmittedListener listener;
     private RadioGroup rgAnswers;
+    private boolean isReviewMode;
+    private int selectedAnswerId;
+    private TextView tvExplanation;
 
-    public static QuestionFragment newInstance(int questionId) {
+    public static QuestionFragment newInstance(int questionId, boolean isReviewMode, int selectedAnswerId) {
         QuestionFragment fragment = new QuestionFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_QUESTION_ID, questionId);
+        args.putBoolean(ARG_IS_REVIEW_MODE, isReviewMode);
+        args.putInt(ARG_SELECTED_ANSWER_ID, selectedAnswerId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,6 +60,9 @@ public class QuestionFragment extends Fragment {
         questionDAO = new QuestionDAO(requireContext());
         answerDAO = new AnswerDAO(requireContext());
         int questionId = getArguments().getInt(ARG_QUESTION_ID);
+        isReviewMode = getArguments().getBoolean(ARG_IS_REVIEW_MODE);
+        selectedAnswerId = getArguments().getInt(ARG_SELECTED_ANSWER_ID);
+
         question = questionDAO.getQuestionById(questionId);
         answers = answerDAO.getAnswersByQuestionId(questionId);
         if (question == null) {
@@ -69,7 +80,7 @@ public class QuestionFragment extends Fragment {
         TextView tvQuestionContent = view.findViewById(R.id.tv_question_content);
         ImageView ivQuestionImage = view.findViewById(R.id.iv_question_image);
         FrameLayout llAnswersContainer = view.findViewById(R.id.ll_answers_container);
-        //Button btnSubmit = view.findViewById(R.id.btn_submit);
+        tvExplanation = view.findViewById(R.id.tv_explanation);
 
         // Set question content
         if (question != null && !question.getContent().isEmpty()) {
@@ -122,37 +133,53 @@ public class QuestionFragment extends Fragment {
 
         // Add RadioGroup to container
         llAnswersContainer.addView(rgAnswers);
-
-        // Auto-submit answer when RadioButton is selected
-        rgAnswers.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId != -1) {
-                RadioButton selectedRadio = group.findViewById(checkedId);
-                Integer answerId = (Integer) selectedRadio.getTag();
-                Answer selectedAnswer = answers.stream()
-                        .filter(a -> a.getId() == answerId)
-                        .findFirst()
-                        .orElse(null);
-                if (selectedAnswer != null && listener != null) {
-                    String status = selectedAnswer.isCorrect() ? "correct" : "incorrect";
-                    questionDAO.updateQuestionSelectedAnswerId(question.getId(), answerId);
-                    listener.onAnswerSubmitted(question.getId(), status);
+        answerDAO = new AnswerDAO(requireContext());
+        if (isReviewMode) {
+            rgAnswers.setEnabled(false); // Disable interaction in review mode
+            for (int i = 0; i < rgAnswers.getChildCount(); i++) {
+                View child = rgAnswers.getChildAt(i);
+                if (child instanceof RadioButton) {
+                    RadioButton rb = (RadioButton) child;
+                    rb.setEnabled(false); // Disable individual radio buttons
+                    Answer correctAnswer = answerDAO.getCorrectAnswerByQuestionId(question.getId());
+                    int answerId = (int) rb.getTag();
+                    if (answerId == selectedAnswerId) {
+                        rb.setChecked(true); // Select the user's chosen answer
+                        if (correctAnswer.getId() != selectedAnswerId) {
+                            rb.setBackgroundResource(R.drawable.incorrect_answer_background); // Highlight incorrect user choice
+                        }
+                    }
+                    if (answerId == correctAnswer.getId()) {
+                        rb.setBackgroundResource(R.drawable.correct_answer_background); // Highlight correct answer
+                    }
                 }
             }
-        });
-
-        // Submit button to complete the quiz
-//        btnSubmit.setOnClickListener(v -> {
-//            new AlertDialog.Builder(requireContext())
-//                    .setTitle("Xác nhận nộp!")
-//                    .setMessage("Bạn muốn nộp chứ?")
-//                    .setPositiveButton("Vâng!", (dialog, which) -> {
-//                        Toast.makeText(requireContext(), "Đã nộp bài!", Toast.LENGTH_SHORT).show();
-//                        Intent intent = new Intent(requireContext(), ResultActivity.class);
-//                        startActivity(intent);
-//                    })
-//                    .setNegativeButton("Huỷ", null)
-//                    .show();
-//        });
+            // Show explanation
+            if (question != null && question.getQuestionExplanation() != null && !question.getQuestionExplanation().isEmpty()) {
+                tvExplanation.setVisibility(View.VISIBLE);
+                tvExplanation.setText("Giải thích: " + question.getQuestionExplanation());
+            } else {
+                tvExplanation.setVisibility(View.GONE);
+            }
+        } else {
+            // Auto-submit answer when RadioButton is selected
+            rgAnswers.setOnCheckedChangeListener((group, checkedId) -> {
+                if (checkedId != -1) {
+                    RadioButton selectedRadio = group.findViewById(checkedId);
+                    Integer answerId = (Integer) selectedRadio.getTag();
+                    Answer selectedAnswer = answers.stream()
+                            .filter(a -> a.getId() == answerId)
+                            .findFirst()
+                            .orElse(null);
+                    if (selectedAnswer != null && listener != null) {
+                        String status = selectedAnswer.isCorrect() ? "correct" : "incorrect";
+                        questionDAO.updateQuestionSelectedAnswerId(question.getId(), answerId);
+                        listener.onAnswerSubmitted(question.getId(), status);
+                    }
+                }
+            });
+            tvExplanation.setVisibility(View.GONE); // Hide explanation in normal quiz mode
+        }
 
         return view;
     }
