@@ -89,4 +89,13 @@ public class LicensesAdapter extends RecyclerView.Adapter<LicensesAdapter.Licens
     public int getSelectedPosition() {
         return selectedPosition;
     }
+
+    public int findPositionByCode(String code) {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getShortCode().equals(code)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }
