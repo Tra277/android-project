@@ -12,12 +12,16 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+
 import com.example.androidproject.R;
 import com.example.androidproject.db.DatabaseHelper;
 
 public class MainActivity extends BaseActivity {
     ImageView imageView;
     Button btnRandomExam, btnExamSet, btnCriticalQuiz, btnTopWQuiz,btnWQuizReview,btnQuizPractice, btnTrafficSigns;
+    private ActivityResultLauncher<Intent> licenseActivityResultLauncher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +41,18 @@ public class MainActivity extends BaseActivity {
         btnWQuizReview = findViewById(R.id.btnWQuizReview);
         btnQuizPractice = findViewById(R.id.btnQuizPractice);
         btnTrafficSigns = findViewById(R.id.btnTrafficSigns);
+
+        licenseActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        String licenseDescription = result.getData().getStringExtra("licenseDescription");
+                        if (licenseDescription != null) {
+                            toolbar.setTitle(licenseDescription);
+                        }
+                    }
+                }
+        );
 
         btnRandomExam.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, QuizActivity.class);
@@ -73,8 +89,7 @@ public class MainActivity extends BaseActivity {
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_settings) {
                 Intent intent = new Intent(MainActivity.this, LicenseActivity.class);
-                startActivity(intent);
-                Toast.makeText(this, "Menu được nhấn", Toast.LENGTH_SHORT).show();
+                licenseActivityResultLauncher.launch(intent);
                 return true;
             }
             return false;
