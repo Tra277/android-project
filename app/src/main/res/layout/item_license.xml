@@ -18,7 +18,7 @@
         >
 
         <TextView
-            android:id="@+id/tvShortCode"
+            android:id="@+id/tvDescription"
             android:layout_width="40dp"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/tvDescription"
+                android:id="@+id/tvShortCode"
                 android:text="Mô tả..."
                 android:textColor="#444"
                 android:textSize="14sp"

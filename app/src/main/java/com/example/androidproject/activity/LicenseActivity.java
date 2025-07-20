@@ -85,12 +85,12 @@ public class LicenseActivity extends BaseActivity {
         adapter = new LicensesAdapter(licenseCategoryItems, (position, item) -> {
             // Save the selected license
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-            prefs.edit().putString(KEY_SELECTED_LICENSE_CODE, item.getShortCode()).apply();
+            prefs.edit().putString(KEY_SELECTED_LICENSE_CODE, item.getTitle()).apply();
             adapter.setSelectedItem(position);
 
             // Return the description to MainActivity
             Intent resultIntent = new Intent();
-            resultIntent.putExtra("licenseDescription", item.getDescription());
+            resultIntent.putExtra("licenseDescription", item.getShortCode());
             setResult(RESULT_OK, resultIntent);
             finish();
         });

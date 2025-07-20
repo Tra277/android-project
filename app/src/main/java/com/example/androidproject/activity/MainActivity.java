@@ -16,12 +16,15 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
 import com.example.androidproject.R;
+import com.example.androidproject.dao.DrivingLicenseDAO;
 import com.example.androidproject.db.DatabaseHelper;
+import com.example.androidproject.model.DrivingLicense;
 
 public class MainActivity extends BaseActivity {
     ImageView imageView;
     Button btnRandomExam, btnExamSet, btnCriticalQuiz, btnTopWQuiz,btnWQuizReview,btnQuizPractice, btnTrafficSigns;
     private ActivityResultLauncher<Intent> licenseActivityResultLauncher;
+    private DrivingLicenseDAO drivingLicenseDAO;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,9 +32,13 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+        drivingLicenseDAO = new DrivingLicenseDAO(this);
+        SharedPreferences prefs = getSharedPreferences("LicensePrefs", MODE_PRIVATE);
+        String licenseCode = prefs.getString("selectedLicenseCode", "A1");
+        DrivingLicense license = drivingLicenseDAO.getDrivingLicenseByCode(licenseCode);
         //dbHelper.populateInitialData();
         setSupportActionBar(toolbar);
-        toolbar.setTitle("600 câu hỏi ôn thi GPLX");
+        toolbar.setTitle(license.getDescription());
         toolbar.setNavigationIcon(null); // ←
         toolbar.inflateMenu(R.menu.top_app_bar_menu); // menu góc phải
         btnRandomExam = findViewById(R.id.btnRandomExam);

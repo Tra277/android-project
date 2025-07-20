@@ -4,7 +4,7 @@ public class LicenseCategoryItem {
     private String title;
     private String description;
 
-    private   String shortCode;
+    private String shortCode;
 
     public LicenseCategoryItem(String title, String description, String shortCode) {
         this.title = title;
