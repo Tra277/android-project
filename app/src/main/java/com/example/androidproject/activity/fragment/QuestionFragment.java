@@ -143,7 +143,7 @@ public class QuestionFragment extends Fragment {
                     rb.setEnabled(false); // Disable individual radio buttons
                     Answer correctAnswer = answerDAO.getCorrectAnswerByQuestionId(question.getId());
                     int answerId = (int) rb.getTag();
-                    if (answerId == selectedAnswerId) {
+                    if (answerId == selectedAnswerId && question.getQuestionStatus().equals("not_yet_done")) {
                         rb.setChecked(true); // Select the user's chosen answer
                         if (correctAnswer.getId() != selectedAnswerId) {
                             rb.setBackgroundResource(R.drawable.incorrect_answer_background); // Highlight incorrect user choice

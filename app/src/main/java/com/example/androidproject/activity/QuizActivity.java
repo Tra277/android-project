@@ -99,7 +99,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
             String quizMode = intent.getStringExtra("quiz_mode");
 
             SharedPreferences prefs = getSharedPreferences("LicensePrefs", MODE_PRIVATE);
-            license_code = prefs.getString("selectedLicenseId", "A1");
+            license_code = prefs.getString("selectedLicenseCode", "A1");
             DrivingLicense license = drivingLicenseDAO.getDrivingLicenseByCode(license_code);
             licenseId = license.getId();
             if (quizMode == null) {
