@@ -12,6 +12,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.androidproject.R;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.example.androidproject.fragment.ChatBottomSheetFragment;
 
 public class BaseActivity extends AppCompatActivity {
     protected MaterialToolbar toolbar;
@@ -37,5 +39,10 @@ public class BaseActivity extends AppCompatActivity {
         }
 
         toolbar.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+
+        FloatingActionButton fabChat = findViewById(R.id.fabChat);
+        if (fabChat != null) {
+            fabChat.setOnClickListener(v -> new ChatBottomSheetFragment().show(getSupportFragmentManager(), "chatbot"));
+        }
     }
 }

@@ -25,7 +25,7 @@ import com.example.androidproject.model.TrafficSignCategory;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "QuizApp.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private Context context;
 
     public DatabaseHelper(Context context) {
