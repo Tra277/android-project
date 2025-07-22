@@ -37,7 +37,7 @@
             android:name=".service.TestService"
             android:enabled="true"
             android:exported="true" />
-
+        <activity android:name=".activity.QuickTipsActivity" />
         <activity
             android:name=".activity.MainActivity"
             android:exported="true">
