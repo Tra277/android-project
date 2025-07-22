@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.Menu;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -27,6 +28,8 @@ import com.example.androidproject.model.DrivingLicense;
 import com.example.androidproject.model.ExamSet;
 import com.example.androidproject.model.ExamSetQuestion;
 import com.example.androidproject.model.Question;
+import com.example.androidproject.utils.LicenseInfoPopup;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -52,6 +55,12 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
     private String license_code;
     private int licenseId;
     private DrivingLicenseDAO drivingLicenseDAO ;
+    //Default for A1
+    private int examTotalQuestions = 25;
+    private int totalTimeMinutes = 19;
+    private FloatingActionButton fabInfo;
+    private LicenseInfoPopup licenseInfoPopup; // Declare LicenseInfoPopup as a member variable
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +68,18 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
 
         setSupportActionBar(toolbar);
         toolbar.setTitle("Bài thi");
-        toolbar.setNavigationIcon(null); // ←
+        boolean isReviewMode = getIntent().getBooleanExtra("is_review_mode", false);
+        fabInfo = findViewById(R.id.fab_info);
+        licenseInfoPopup = new LicenseInfoPopup(this); // Initialize the popup here
+
+        if (isReviewMode) {
+            toolbar.setNavigationIcon(R.drawable.ic_exit); // Set back arrow icon
+            toolbar.setNavigationOnClickListener(v -> onBackPressed()); // Handle back button click
+            fabInfo.setVisibility(View.GONE); // Hide fabInfo in review mode
+        } else {
+            toolbar.setNavigationIcon(null); // No back arrow in quiz mode
+            fabInfo.setVisibility(View.VISIBLE); // Ensure fabInfo is visible in quiz mode
+        }
         toolbar.inflateMenu(R.menu.top_app_bar_exam);
         // Initialize views
         tabLayout = findViewById(R.id.tab_layout);
@@ -72,62 +92,54 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         examSetQuestionDAO = new ExamSetQuestionDAO(this);
         examSetDAO.deleteOldExamSets();
         drivingLicenseDAO = new DrivingLicenseDAO(this);
-        String quizMode = getIntent().getStringExtra("quiz_mode");
-
+        Intent intent = getIntent();
+        int initialPosition = intent.getIntExtra("question_position", -1);
+        List<Question> receivedQuestions = intent.getParcelableArrayListExtra("questions");
         SharedPreferences prefs = getSharedPreferences("LicensePrefs", MODE_PRIVATE);
-        license_code = prefs.getString("selectedLicenseId", "A1");
+        license_code = prefs.getString("selectedLicenseCode", "A1");
         DrivingLicense license = drivingLicenseDAO.getDrivingLicenseByCode(license_code);
-        licenseId = license.getId();
-        if (quizMode == null) {
-            quizMode = "random_exam"; // Default mode
+        if(license_code.equals("A1") || license_code.equals("A")) {
+            examTotalQuestions = 25;
+            totalTimeMinutes = 19;
+        } else if( license_code.equals("B")) {
+            totalTimeMinutes = 27;
+            examTotalQuestions = 30;
+        } else if( license_code.equals("C1")){
+            examTotalQuestions = 35;
+            totalTimeMinutes = 22;
+        } else if( license_code.equals("C")){
+            examTotalQuestions = 40;
+            totalTimeMinutes = 22;
+        }else{
+            examTotalQuestions = 45;
+            totalTimeMinutes = 25;
         }
-        if(quizMode.equals("exam_set")) {
-            examSetId = getIntent().getIntExtra("examSetId",1);
-            questions = questionDAO.getQuestionsByExamSetId(examSetId);
-        }
-        if(quizMode.equals("random_exam")) {
-            questions = questionDAO.getRandomQuestions(license.getId());
-            ExamSet examSet = new ExamSet("Random Exam", questions.size(), 0, false ,licenseId,false);
-
-            long newExamSetId = examSetDAO.addExamSet(examSet);
-            examSetId = newExamSetId;
-            for (Question question : questions) {
-                ExamSetQuestion examSetQuestion = new ExamSetQuestion();
-                examSetQuestion.setQuestionId(question.getId());
-                examSetQuestion.setExamSetId((int)newExamSetId);
-                examSetQuestionDAO.insertExamSetQuestion(examSetQuestion);
+        if (receivedQuestions != null && !receivedQuestions.isEmpty()) {
+            questions = receivedQuestions;
+            if (isReviewMode) {
+                // In review mode, ensure selectedAnswerId is loaded for each question
+                for (int i = 0; i < questions.size(); i++) {
+                    Question originalQuestion = questions.get(i);
+                    Question updatedQuestion = questionDAO.getQuestionById(originalQuestion.getId());
+                    if (updatedQuestion != null) {
+                        questions.set(i, updatedQuestion); // Update the question object in the list
+                    }
+                }
             }
-        }
-        if(quizMode.equals("top_wquiz")) {
-            questions = questionDAO.getConfusingQuestions(license.getId());
-            ExamSet examSet = new ExamSet("Confusing Exam", questions.size(), 0, false ,licenseId,false);
-
-            long newExamSetId = examSetDAO.addExamSet(examSet);
-            examSetId = newExamSetId;
-            for (Question question : questions) {
-                ExamSetQuestion examSetQuestion = new ExamSetQuestion();
-                examSetQuestion.setQuestionId(question.getId());
-                examSetQuestion.setExamSetId((int)newExamSetId);
-                examSetQuestionDAO.insertExamSetQuestion(examSetQuestion);
+        } else {
+            String quizMode = intent.getStringExtra("quiz_mode");
+            licenseId = license.getId();
+            if (quizMode == null) {
+                quizMode = "random_exam"; // Default mode
             }
-        }
-        if(quizMode.equals("critical_quiz")) {
-           questions = questionDAO.getCriticalQuestions(license.getId());
-            ExamSet examSet = new ExamSet("Critical Exam", questions.size(), 0, false ,licenseId,false);
-
-            long newExamSetId = examSetDAO.addExamSet(examSet);
-            examSetId = newExamSetId;
-            for (Question question : questions) {
-                ExamSetQuestion examSetQuestion = new ExamSetQuestion();
-                examSetQuestion.setQuestionId(question.getId());
-                examSetQuestion.setExamSetId((int)newExamSetId);
-                examSetQuestionDAO.insertExamSetQuestion(examSetQuestion);
+            if(quizMode.equals("exam_set")) {
+                examSetId = intent.getIntExtra("examSetId",1);
+                questions = questionDAO.getQuestionsByExamSetId(examSetId);
             }
-        }
-        if(quizMode.equals("wquiz_review")) {
-            questions = questionDAO.getQuestionsByStatus("incorrect", license.getId());
-            if(questions.size() > 0){
-                ExamSet examSet = new ExamSet("Wrong Quiz Review Exam", questions.size(), 0, false ,licenseId,false);
+            if(quizMode.equals("random_exam")) {
+                questions = questionDAO.getRandomQuestions(license.getId(),examTotalQuestions);
+                ExamSet examSet = new ExamSet("Random Exam", questions.size(), 0, false ,licenseId,false);
+
                 long newExamSetId = examSetDAO.addExamSet(examSet);
                 examSetId = newExamSetId;
                 for (Question question : questions) {
@@ -137,18 +149,62 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
                     examSetQuestionDAO.insertExamSetQuestion(examSetQuestion);
                 }
             }
-        }
-        if(quizMode.equals("category")) {
-            int categoryId = getIntent().getIntExtra("categoryId",1);
-            questions = questionDAO.getQuestionsByCategory(categoryId);
-            ExamSet examSet = new ExamSet("Category Exam", questions.size(), 0, false ,licenseId,false);
-            long newExamSetId = examSetDAO.addExamSet(examSet);
-            examSetId = newExamSetId;
-            for (Question question : questions) {
-                ExamSetQuestion examSetQuestion = new ExamSetQuestion();
-                examSetQuestion.setQuestionId(question.getId());
-                examSetQuestion.setExamSetId((int)newExamSetId);
-                examSetQuestionDAO.insertExamSetQuestion(examSetQuestion);
+            if(quizMode.equals("top_wquiz")) {
+                fabInfo.setVisibility(View.GONE);
+                questions = questionDAO.getConfusingQuestions(license.getId());
+                ExamSet examSet = new ExamSet("Confusing Exam", questions.size(), 0, false ,licenseId,false);
+
+                long newExamSetId = examSetDAO.addExamSet(examSet);
+                examSetId = newExamSetId;
+                for (Question question : questions) {
+                    ExamSetQuestion examSetQuestion = new ExamSetQuestion();
+                    examSetQuestion.setQuestionId(question.getId());
+                    examSetQuestion.setExamSetId((int)newExamSetId);
+                    examSetQuestionDAO.insertExamSetQuestion(examSetQuestion);
+                }
+            }
+            if(quizMode.equals("critical_quiz")) {
+                fabInfo.setVisibility(View.GONE);
+               questions = questionDAO.getCriticalQuestions(license.getId());
+                ExamSet examSet = new ExamSet("Critical Exam", questions.size(), 0, false ,licenseId,false);
+
+                long newExamSetId = examSetDAO.addExamSet(examSet);
+                examSetId = newExamSetId;
+                for (Question question : questions) {
+                    ExamSetQuestion examSetQuestion = new ExamSetQuestion();
+                    examSetQuestion.setQuestionId(question.getId());
+                    examSetQuestion.setExamSetId((int)newExamSetId);
+                    examSetQuestionDAO.insertExamSetQuestion(examSetQuestion);
+                }
+            }
+            if(quizMode.equals("wquiz_review")) {
+                fabInfo.setVisibility(View.GONE);
+                questions = questionDAO.getQuestionsByStatus("incorrect", license.getId());
+                if(questions.size() > 0){
+                    ExamSet examSet = new ExamSet("Wrong Quiz Review Exam", questions.size(), 0, false ,licenseId,false);
+                    long newExamSetId = examSetDAO.addExamSet(examSet);
+                    examSetId = newExamSetId;
+                    for (Question question : questions) {
+                        ExamSetQuestion examSetQuestion = new ExamSetQuestion();
+                        examSetQuestion.setQuestionId(question.getId());
+                        examSetQuestion.setExamSetId((int)newExamSetId);
+                        examSetQuestionDAO.insertExamSetQuestion(examSetQuestion);
+                    }
+                }
+            }
+            if(quizMode.equals("category")) {
+                fabInfo.setVisibility(View.GONE);
+                int categoryId = intent.getIntExtra("categoryId",1);
+                questions = questionDAO.getQuestionsByCategory(categoryId);
+                ExamSet examSet = new ExamSet("Category Exam", questions.size(), 0, false ,licenseId,false);
+                long newExamSetId = examSetDAO.addExamSet(examSet);
+                examSetId = newExamSetId;
+                for (Question question : questions) {
+                    ExamSetQuestion examSetQuestion = new ExamSetQuestion();
+                    examSetQuestion.setQuestionId(question.getId());
+                    examSetQuestion.setExamSetId((int)newExamSetId);
+                    examSetQuestionDAO.insertExamSetQuestion(examSetQuestion);
+                }
             }
         }
 
@@ -168,41 +224,51 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
                 .filter(q -> !q.getQuestionStatus().equals("not_yet_done"))
                 .count();
 
+
         // Set up ViewPager and TabLayout
-        QuestionPagerAdapter adapter = new QuestionPagerAdapter(this,questions);
+        QuestionPagerAdapter adapter = new QuestionPagerAdapter(this, questions, isReviewMode);
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> tab.setText("Câu " + (position + 1)))
                 .attach();
         updateProgress();
-        // Set up timer (e.g., 20 minutes = 1800000 * 2 / 3 ms)
-        countDownTimer = new CountDownTimer(1800000 * 2 / 3, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                int minutes = (int) (millisUntilFinished / 1000) / 60;
-                int seconds = (int) (millisUntilFinished / 1000) % 60;
-                tvTimer.setText(String.format("Time: %02d:%02d", minutes, seconds));
-            }
 
-            @Override
-            public void onFinish() {
-                tvTimer.setText("Time's up!");
-                // Handle quiz completion
-            }
-        }.start();
-        btnSubmitQuiz.setOnClickListener(v -> {
-            new AlertDialog.Builder(this)
-                    .setTitle("Xác nhận nộp!")
-                    .setMessage("Bạn muốn nộp bài chứ?")
-                    .setPositiveButton("Vâng!", (dialog, which) -> {
-                        Toast.makeText(this, "Đã nộp bài!", Toast.LENGTH_SHORT).show();
-                        submitQuiz();
-                    })
-                    .setNegativeButton("Hủy", null)
-                    .show();
-        });
+        if (initialPosition != -1 && initialPosition < questions.size()) {
+            viewPager.setCurrentItem(initialPosition, false); // Set to the specific question
+        }
 
-    // drawer
+        if (isReviewMode) {
+            tvTimer.setVisibility(View.GONE);
+            btnSubmitQuiz.setVisibility(View.GONE);
+        } else {
+            countDownTimer = new CountDownTimer(totalTimeMinutes * 60 * 1000, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    int minutes = (int) (millisUntilFinished / 1000) / 60;
+                    int seconds = (int) (millisUntilFinished / 1000) % 60;
+                    tvTimer.setText(String.format("Time: %02d:%02d", minutes, seconds));
+                }
+
+                @Override
+                public void onFinish() {
+                    tvTimer.setText("Time's up!");
+                    // Handle quiz completion
+                }
+            }.start();
+            btnSubmitQuiz.setOnClickListener(v -> {
+                new AlertDialog.Builder(this)
+                        .setTitle("Xác nhận nộp!")
+                        .setMessage("Bạn muốn nộp bài chứ?")
+                        .setPositiveButton("Vâng!", (dialog, which) -> {
+                            Toast.makeText(this, "Đã nộp bài!", Toast.LENGTH_SHORT).show();
+                            submitQuiz();
+                        })
+                        .setNegativeButton("Hủy", null)
+                        .show();
+            });
+        }
+
+        // drawer
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.show_question) {
                 Toast.makeText(this, "Show question", Toast.LENGTH_SHORT).show();
@@ -213,12 +279,17 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
             return false;
         });
 
-
+        fabInfo.setOnClickListener(v -> {
+            showLicenseInfoPopup(license);
+        });
     }
 
     private void submitQuiz() {
         if (countDownTimer != null) {
             countDownTimer.cancel();
+        }
+        if (licenseInfoPopup != null) {
+            licenseInfoPopup.dismiss(); // Dismiss the popup when quiz is submitted
         }
         Intent intent = new Intent(this, ResultActivity.class);
         intent.putExtra("total_questions", totalQuestions);
@@ -298,6 +369,9 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
+        if (licenseInfoPopup != null) {
+            licenseInfoPopup.dismiss(); // Dismiss the popup to prevent window leaks
+        }
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -308,5 +382,9 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
     @Override
     public void onQuestionSelected(int position) {
         viewPager.setCurrentItem(position, true); // Smooth scroll to the selected question
+    }
+
+    private void showLicenseInfoPopup(DrivingLicense license) {
+        licenseInfoPopup.show(license); // Use the member variable
     }
 }

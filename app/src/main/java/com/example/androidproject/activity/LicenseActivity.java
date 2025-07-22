@@ -1,5 +1,6 @@
 package com.example.androidproject.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
@@ -82,21 +83,27 @@ public class LicenseActivity extends BaseActivity {
         }
 
         adapter = new LicensesAdapter(licenseCategoryItems, (position, item) -> {
-            Toast.makeText(this, "Clicked: " + item.getTitle(), Toast.LENGTH_SHORT).show();
+            // Save the selected license
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-            prefs.edit().putString(KEY_SELECTED_LICENSE_CODE, item.getTitle()).apply(); // Lưu code
-            adapter.setSelectedItem(position); // Cập nhật item được chọn
+            prefs.edit().putString(KEY_SELECTED_LICENSE_CODE, item.getTitle()).apply();
+            adapter.setSelectedItem(position);
+
+            // Return the description to MainActivity
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("licenseDescription", item.getShortCode());
+            setResult(RESULT_OK, resultIntent);
+            finish();
         });
         recyclerView.setAdapter(adapter);
 
-        // Khôi phục item đã chọn dựa trên code
+        // Restore the selected item
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String savedCode = prefs.getString(KEY_SELECTED_LICENSE_CODE, null);
+        String savedCode = prefs.getString(KEY_SELECTED_LICENSE_CODE, "A1");
         if (savedCode != null && adapter != null) {
-            int position = findPositionByCode(savedCode);
+            int position = adapter.findPositionByCode(savedCode);
             if (position != -1) {
                 adapter.setSelectedItem(position);
-                recyclerView.scrollToPosition(position); // Cuộn đến item được chọn
+                recyclerView.scrollToPosition(position);
             }
         }
     }

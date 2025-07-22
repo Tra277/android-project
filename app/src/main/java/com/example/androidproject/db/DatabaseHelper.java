@@ -25,7 +25,7 @@ import com.example.androidproject.model.TrafficSignCategory;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "QuizApp.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     private Context context;
 
     public DatabaseHelper(Context context) {
@@ -61,6 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "is_confusing_quiz INTEGER NOT NULL," +
                 "question_explanation TEXT NOT NULL," +
                 "question_status TEXT CHECK(question_status IN (\'correct\', \'incorrect\', \'not_yet_done\')) NOT NULL," +
+                "selected_answer_id INTEGER," +
                 "category_id INTEGER NOT NULL," +
                 "FOREIGN KEY (category_id) REFERENCES Category(id)" +
                 ")");

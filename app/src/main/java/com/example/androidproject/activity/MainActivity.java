@@ -12,13 +12,20 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+
 import com.example.androidproject.R;
+import com.example.androidproject.dao.DrivingLicenseDAO;
 import com.example.androidproject.db.DatabaseHelper;
 import com.google.android.material.button.MaterialButton;
+import com.example.androidproject.model.DrivingLicense;
 
 public class MainActivity extends BaseActivity {
     ImageView imageView;
     Button btnRandomExam, btnExamSet, btnCriticalQuiz, btnTopWQuiz,btnWQuizReview,btnQuizPractice, btnTrafficSigns;
+    private ActivityResultLauncher<Intent> licenseActivityResultLauncher;
+    private DrivingLicenseDAO drivingLicenseDAO;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,11 +33,16 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        dbHelper.populateInitialData();
+        drivingLicenseDAO = new DrivingLicenseDAO(this);
+        SharedPreferences prefs = getSharedPreferences("LicensePrefs", MODE_PRIVATE);
+        String licenseCode = prefs.getString("selectedLicenseCode", "A1");
+        DrivingLicense license = drivingLicenseDAO.getDrivingLicenseByCode(licenseCode);
+        //dbHelper.populateInitialData();
         setSupportActionBar(toolbar);
-        toolbar.setTitle("600 câu hỏi ôn thi GPLX");
+        if(license != null) {
+            toolbar.setTitle(license.getDescription());
+        }
         toolbar.setNavigationIcon(null); // ←
-
         toolbar.inflateMenu(R.menu.top_app_bar_menu); // menu góc phải
 
         MaterialButton quickTipsBtn = findViewById(R.id.btn_quick_tips);
@@ -42,10 +54,22 @@ public class MainActivity extends BaseActivity {
         btnRandomExam = findViewById(R.id.btnRandomExam);
         btnExamSet = findViewById(R.id.btnExamSet);
         btnCriticalQuiz = findViewById(R.id.btnCriticalQuiz);
-//        btnTopWQuiz = findViewById(R.id.btnTopWQuiz);
+        btnTopWQuiz = findViewById(R.id.btnTopWQuiz);
         btnWQuizReview = findViewById(R.id.btnWQuizReview);
         btnQuizPractice = findViewById(R.id.btnQuizPractice);
         btnTrafficSigns = findViewById(R.id.btnTrafficSigns);
+
+        licenseActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        String licenseDescription = result.getData().getStringExtra("licenseDescription");
+                        if (licenseDescription != null) {
+                            toolbar.setTitle(licenseDescription);
+                        }
+                    }
+                }
+        );
 
         btnRandomExam.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, QuizActivity.class);
@@ -61,11 +85,11 @@ public class MainActivity extends BaseActivity {
             intent.putExtra("quiz_mode", "critical_quiz");
             startActivity(intent);
         });
-//        btnTopWQuiz.setOnClickListener(v -> {
-//            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
-//            intent.putExtra("quiz_mode", "top_wquiz");
-//            startActivity(intent);
-//        });
+        btnTopWQuiz.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
+            intent.putExtra("quiz_mode", "top_wquiz");
+            startActivity(intent);
+        });
         btnWQuizReview.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, QuizActivity.class);
             intent.putExtra("quiz_mode", "wquiz_review");
@@ -83,15 +107,13 @@ public class MainActivity extends BaseActivity {
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_settings) {
                 Intent intent = new Intent(MainActivity.this, LicenseActivity.class);
-                startActivity(intent);
-                Toast.makeText(this, "Menu được nhấn", Toast.LENGTH_SHORT).show();
+                licenseActivityResultLauncher.launch(intent);
                 return true;
             }
             return false;
         });
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -102,7 +124,6 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.action_settings) {
             // Xử lý khi nhấn vào menu cài đặt
             // Ví dụ: Mở màn hình cài đặt
@@ -110,7 +131,6 @@ public class MainActivity extends BaseActivity {
             // startActivity(intent);
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

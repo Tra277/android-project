@@ -39,6 +39,7 @@ public class QuestionDAO {
         values.put("question_explanation", question.getQuestionExplanation());
         values.put("question_status", question.getQuestionStatus());
         values.put("category_id", question.getCategoryId());
+        values.put("selected_answer_id", question.getSelectedAnswerId());
 
         long id = database.insert("Question", null, values);
         close();
@@ -111,14 +112,15 @@ public class QuestionDAO {
     }
 
     //get random 25 questions by license ID
-    public List<Question> getRandomQuestions(int licenseId) {
+    public List<Question> getRandomQuestions(int licenseId, int quantity) {
         List<Question> questions = new ArrayList<>();
         open();
         String query = "SELECT q.* FROM Question q " +
                 "INNER JOIN Category c ON q.category_id = c.id " +
                 "INNER JOIN DrivingLicense dl ON c.license_id = dl.id " +
                 "WHERE dl.id = ? " +
-                "ORDER BY RANDOM() LIMIT 25";
+                "ORDER BY RANDOM() LIMIT " + quantity;
+
         Cursor cursor = database.rawQuery(query, new String[]{String.valueOf(licenseId)});
         if (cursor.moveToFirst()) {
             do {
@@ -129,6 +131,7 @@ public class QuestionDAO {
         close();
         return questions;
     }
+
 
     public List<Question> getQuestionsByCategory(int categoryId) {
         List<Question> questions = new ArrayList<>();
@@ -143,6 +146,15 @@ public class QuestionDAO {
         cursor.close();
         close();
         return questions;
+    }
+
+    public int updateQuestionSelectedAnswerId(int questionId, int selectedAnswerId) {
+        open();
+        ContentValues values = new ContentValues();
+        values.put("selected_answer_id", selectedAnswerId);
+        int rowsAffected = database.update("Question", values, "id = ?", new String[]{String.valueOf(questionId)});
+        close();
+        return rowsAffected;
     }
 
     public List<Question> getQuestionsByCategoryAndStatus(int categoryId, String status) {
@@ -277,6 +289,7 @@ public class QuestionDAO {
         values.put("question_explanation", question.getQuestionExplanation());
         values.put("question_status", question.getQuestionStatus());
         values.put("category_id", question.getCategoryId());
+        values.put("selected_answer_id", question.getSelectedAnswerId());
 
         int rowsAffected = database.update("Question", values, "id = ?",
                 new String[]{String.valueOf(question.getId())});
@@ -303,6 +316,7 @@ public class QuestionDAO {
         question.setQuestionExplanation(cursor.getString(cursor.getColumnIndexOrThrow("question_explanation")));
         question.setQuestionStatus(cursor.getString(cursor.getColumnIndexOrThrow("question_status")));
         question.setCategoryId(cursor.getInt(cursor.getColumnIndexOrThrow("category_id")));
+        question.setSelectedAnswerId(cursor.getInt(cursor.getColumnIndexOrThrow("selected_answer_id")));
         return question;
     }
 }

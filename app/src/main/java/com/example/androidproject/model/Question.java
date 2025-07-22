@@ -12,6 +12,7 @@ public class Question implements Parcelable {
     private String questionExplanation;
     private String questionStatus = "not_yet_done";
     private int categoryId;
+    private int selectedAnswerId = -1; 
 
     // Constructors
     public Question() {
@@ -19,7 +20,7 @@ public class Question implements Parcelable {
 
     public Question(int id, String content, String imagePath, boolean isCriticalQuiz,
                     boolean isConfusingQuiz, String questionExplanation,
-                    String questionStatus, int categoryId) {
+                    String questionStatus, int categoryId, int selectedAnswerId) {
         this.id = id;
         this.content = content;
         this.imagePath = imagePath;
@@ -28,6 +29,7 @@ public class Question implements Parcelable {
         this.questionExplanation = questionExplanation;
         this.questionStatus = questionStatus;
         this.categoryId = categoryId;
+        this.selectedAnswerId = selectedAnswerId;
     }
 
     // Getters and Setters
@@ -95,6 +97,14 @@ public class Question implements Parcelable {
         this.categoryId = categoryId;
     }
 
+    public int getSelectedAnswerId() {
+        return selectedAnswerId;
+    }
+
+    public void setSelectedAnswerId(int selectedAnswerId) {
+        this.selectedAnswerId = selectedAnswerId;
+    }
+
     protected Question(Parcel in) {
         id = in.readInt();
         content = in.readString();
@@ -104,6 +114,7 @@ public class Question implements Parcelable {
         questionExplanation = in.readString();
         questionStatus = in.readString();
         categoryId = in.readInt();
+        selectedAnswerId = in.readInt();
     }
 
     public static final Creator<Question> CREATOR = new Creator<Question>() {
@@ -133,5 +144,6 @@ public class Question implements Parcelable {
         dest.writeString(questionExplanation);
         dest.writeString(questionStatus);
         dest.writeInt(categoryId);
+        dest.writeInt(selectedAnswerId);
     }
 }
