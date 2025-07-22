@@ -24,6 +24,23 @@ public class GeminiService {
     }
 
     private static final String BASE_URL = "https://generativelanguage.googleapis.com/";
+    private static final String[] KEYS = {
+            com.example.androidproject.BuildConfig.GEMINI_API_KEY_1,
+            com.example.androidproject.BuildConfig.GEMINI_API_KEY_2,
+            com.example.androidproject.BuildConfig.GEMINI_API_KEY_3
+    };
+    private int keyIndex = 0;
+
+    private String nextKey() {
+        // cycle through keys; if empty string encountered skip it
+        for (int i = 0; i < KEYS.length; i++) {
+            String k = KEYS[keyIndex % KEYS.length];
+            keyIndex++;
+            if (k != null && !k.isEmpty()) return k;
+        }
+        return ""; // no valid key
+    }
+
     private static GeminiService instance;
     private final GeminiApi api;
 
@@ -49,23 +66,35 @@ public class GeminiService {
     public void ask(String question, GeminiCallback callback) {
         //prompt
         String systemPrompt = "You are a Vietnamese driving instructor. Only answer questions about driving, road rules, traffic signs, penalties. If the question is unrelated, politely refuse.";
-        GenerateContentRequest.Part systemPart = new GenerateContentRequest.Part(systemPrompt);
-        GenerateContentRequest.Part userPart = new GenerateContentRequest.Part(question);
+        String combined = systemPrompt + "\n\n" + question;
+        GenerateContentRequest.Part part = new GenerateContentRequest.Part(combined);
+        GenerateContentRequest.Content content = new GenerateContentRequest.Content("user", Collections.singletonList(part));
+        GenerateContentRequest.GenerationConfig config = new GenerateContentRequest.GenerationConfig(0.2, 160);
+        GenerateContentRequest request = new GenerateContentRequest(java.util.Arrays.asList(content), config);
 
-        GenerateContentRequest.Content systemContent = new GenerateContentRequest.Content("user", Collections.singletonList(systemPart));
-        GenerateContentRequest.Content userContent = new GenerateContentRequest.Content("user", Collections.singletonList(userPart));
-
-        GenerateContentRequest.GenerationConfig config = new GenerateContentRequest.GenerationConfig(0.25, 100);
-        GenerateContentRequest request = new GenerateContentRequest(java.util.Arrays.asList(systemContent, userContent), config);
-
-        api.generateContent(BuildConfig.GEMINI_API_KEY, request).enqueue(new Callback<GenerateContentResponse>() {
+        String apiKey = KEYS[keyIndex % KEYS.length];
+        api.generateContent(apiKey, request).enqueue(new Callback<GenerateContentResponse>() {
             @Override
             public void onResponse(Call<GenerateContentResponse> call, Response<GenerateContentResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().candidates != null && !response.body().candidates.isEmpty()) {
                     GenerateContentResponse.Part part = response.body().candidates.get(0).content.parts.get(0);
                     callback.onSuccess(part.text);
+                } else if ((response.code()==429 || response.code()==503) && KEYS.length>1) {
+                    // rotate key and retry once
+                    String newKey = nextKey();
+                    if(!newKey.isEmpty()) {
+                        api.generateContent(newKey, request).enqueue(this);
+                        return;
+                    }
+                    String errBody=null;
+                    try{ if(response.errorBody()!=null) errBody=response.errorBody().string();}catch(Exception ignored){}
+                    callback.onError("HTTP "+response.code()+" No answer - "+errBody);
+                    Log.e("GeminiService","All keys exhausted.");
                 } else {
-                    callback.onError("No answer");
+                    String errBody = null;
+                    try { if(response.errorBody()!=null) errBody = response.errorBody().string(); } catch(Exception ignored){}
+                    callback.onError("HTTP " + response.code() + " No answer" + (errBody!=null? (" - "+errBody):""));
+                    Log.e("GeminiService", "Empty candidates: HTTP " + response.code() + " body=" + errBody);
                 }
             }
 

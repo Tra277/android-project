@@ -19,6 +19,7 @@ import com.example.androidproject.R;
 import com.example.androidproject.adapter.ChatAdapter;
 import com.example.androidproject.model.Message;
 import com.example.androidproject.network.GeminiService;
+import com.example.androidproject.network.HfService;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
@@ -94,7 +95,9 @@ public class ChatBottomSheetFragment extends BottomSheetDialogFragment {
             promptInput += "\nUser query: " + userInput;
         }
 
-        GeminiService.getInstance().ask(promptInput, new GeminiService.GeminiCallback() {
+        final String finalPrompt = promptInput;
+
+        GeminiService.getInstance().ask(finalPrompt, new GeminiService.GeminiCallback() {
             @Override
             public void onSuccess(String reply) {
                 progressBar.setVisibility(View.GONE);
@@ -104,7 +107,19 @@ public class ChatBottomSheetFragment extends BottomSheetDialogFragment {
             @Override
             public void onError(String error) {
                 progressBar.setVisibility(View.GONE);
-                addMessage("Error: " + error, false);
+                if(error.contains("503") || error.contains("429")) {
+                    // try fallback
+                    HfService.getInstance().ask(finalPrompt, new HfService.HfCallback() {
+                        @Override public void onSuccess(String reply) {
+                            addMessage(reply + " (HF)", false);
+                        }
+                        @Override public void onError(String err) {
+                            addMessage("Error: " + error + "\nHF: " + err, false);
+                        }
+                    });
+                } else {
+                    addMessage("Error: " + error, false);
+                }
             }
         });
     }
