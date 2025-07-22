@@ -18,8 +18,10 @@ android {
         buildConfigField "String", "GEMINI_API_KEY_1", "\"AIzaSyD9YQRtTgl1zNfDTHMm_193FraHAtXBZ_I\""
         buildConfigField "String", "GEMINI_API_KEY_2", "\"AIzaSyAkJkYZnUCjL_hKaZ17SLhr0fsmz4dvIjI\""
         buildConfigField "String", "GEMINI_API_KEY_3", "\"AIzaSyBfpXSJHYV1yNF6ITdAJeFXnAFAy4RMZ1I\""
-        buildConfigField "String", "HF_TOKEN", "\"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\""
+        def HF = project.findProperty("HF_TOKEN")      ?: ""
 
+
+        buildConfigField "String", "HF_TOKEN",         "\"${HF}\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
