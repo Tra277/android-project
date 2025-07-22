@@ -38,7 +38,9 @@ public class MainActivity extends BaseActivity {
         DrivingLicense license = drivingLicenseDAO.getDrivingLicenseByCode(licenseCode);
         //dbHelper.populateInitialData();
         setSupportActionBar(toolbar);
-        toolbar.setTitle(license.getDescription());
+        if(license != null) {
+            toolbar.setTitle(license.getDescription());
+        }
         toolbar.setNavigationIcon(null); // ←
         toolbar.inflateMenu(R.menu.top_app_bar_menu); // menu góc phải
         btnRandomExam = findViewById(R.id.btnRandomExam);

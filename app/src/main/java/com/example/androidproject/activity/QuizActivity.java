@@ -28,6 +28,8 @@ import com.example.androidproject.model.DrivingLicense;
 import com.example.androidproject.model.ExamSet;
 import com.example.androidproject.model.ExamSetQuestion;
 import com.example.androidproject.model.Question;
+import com.example.androidproject.utils.LicenseInfoPopup;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -56,6 +58,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
     //Default for A1
     private int examTotalQuestions = 25;
     private int totalTimeMinutes = 19;
+    private FloatingActionButton fabInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +68,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         setSupportActionBar(toolbar);
         toolbar.setTitle("Bài thi");
         boolean isReviewMode = getIntent().getBooleanExtra("is_review_mode", false);
+        fabInfo = findViewById(R.id.fab_info);
         if (isReviewMode) {
             toolbar.setNavigationIcon(R.drawable.ic_exit); // Set back arrow icon
             toolbar.setNavigationOnClickListener(v -> onBackPressed()); // Handle back button click
@@ -265,6 +269,10 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
             }
             return false;
         });
+
+        fabInfo.setOnClickListener(v -> {
+            showLicenseInfoPopup(license);
+        });
     }
 
     private void submitQuiz() {
@@ -359,5 +367,10 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
     @Override
     public void onQuestionSelected(int position) {
         viewPager.setCurrentItem(position, true); // Smooth scroll to the selected question
+    }
+
+    private void showLicenseInfoPopup(DrivingLicense license) {
+        LicenseInfoPopup popup = new LicenseInfoPopup(this);
+        popup.show(license);
     }
 }
