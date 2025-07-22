@@ -112,14 +112,15 @@ public class QuestionDAO {
     }
 
     //get random 25 questions by license ID
-    public List<Question> getRandomQuestions(int licenseId) {
+    public List<Question> getRandomQuestions(int licenseId, int quantity) {
         List<Question> questions = new ArrayList<>();
         open();
         String query = "SELECT q.* FROM Question q " +
                 "INNER JOIN Category c ON q.category_id = c.id " +
                 "INNER JOIN DrivingLicense dl ON c.license_id = dl.id " +
                 "WHERE dl.id = ? " +
-                "ORDER BY RANDOM() LIMIT 25";
+                "ORDER BY RANDOM() LIMIT " + quantity;
+
         Cursor cursor = database.rawQuery(query, new String[]{String.valueOf(licenseId)});
         if (cursor.moveToFirst()) {
             do {
@@ -130,6 +131,7 @@ public class QuestionDAO {
         close();
         return questions;
     }
+
 
     public List<Question> getQuestionsByCategory(int categoryId) {
         List<Question> questions = new ArrayList<>();

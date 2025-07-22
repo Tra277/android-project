@@ -53,6 +53,10 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
     private String license_code;
     private int licenseId;
     private DrivingLicenseDAO drivingLicenseDAO ;
+    //Default for A1
+    private int examTotalQuestions = 25;
+    private int totalTimeMinutes = 19;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +86,25 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         Intent intent = getIntent();
         int initialPosition = intent.getIntExtra("question_position", -1);
         List<Question> receivedQuestions = intent.getParcelableArrayListExtra("questions");
-
+        SharedPreferences prefs = getSharedPreferences("LicensePrefs", MODE_PRIVATE);
+        license_code = prefs.getString("selectedLicenseCode", "A1");
+        DrivingLicense license = drivingLicenseDAO.getDrivingLicenseByCode(license_code);
+        if(license_code.equals("A1") || license_code.equals("A")) {
+            examTotalQuestions = 25;
+            totalTimeMinutes = 19;
+        } else if( license_code.equals("B")) {
+            totalTimeMinutes = 27;
+            examTotalQuestions = 30;
+        } else if( license_code.equals("C1")){
+            examTotalQuestions = 35;
+            totalTimeMinutes = 22;
+        } else if( license_code.equals("C")){
+            examTotalQuestions = 40;
+            totalTimeMinutes = 22;
+        }else{
+            examTotalQuestions = 45;
+            totalTimeMinutes = 25;
+        }
         if (receivedQuestions != null && !receivedQuestions.isEmpty()) {
             questions = receivedQuestions;
             if (isReviewMode) {
@@ -97,10 +119,6 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
             }
         } else {
             String quizMode = intent.getStringExtra("quiz_mode");
-
-            SharedPreferences prefs = getSharedPreferences("LicensePrefs", MODE_PRIVATE);
-            license_code = prefs.getString("selectedLicenseCode", "A1");
-            DrivingLicense license = drivingLicenseDAO.getDrivingLicenseByCode(license_code);
             licenseId = license.getId();
             if (quizMode == null) {
                 quizMode = "random_exam"; // Default mode
@@ -110,7 +128,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
                 questions = questionDAO.getQuestionsByExamSetId(examSetId);
             }
             if(quizMode.equals("random_exam")) {
-                questions = questionDAO.getRandomQuestions(license.getId());
+                questions = questionDAO.getRandomQuestions(license.getId(),examTotalQuestions);
                 ExamSet examSet = new ExamSet("Random Exam", questions.size(), 0, false ,licenseId,false);
 
                 long newExamSetId = examSetDAO.addExamSet(examSet);
@@ -210,8 +228,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
             tvTimer.setVisibility(View.GONE);
             btnSubmitQuiz.setVisibility(View.GONE);
         } else {
-            // Set up timer (e.g., 20 minutes = 1800000 * 2 / 3 ms)
-            countDownTimer = new CountDownTimer(1800000 * 2 / 3, 1000) {
+            countDownTimer = new CountDownTimer(totalTimeMinutes * 60 * 1000, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
                     int minutes = (int) (millisUntilFinished / 1000) / 60;
