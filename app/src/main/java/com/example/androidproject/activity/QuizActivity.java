@@ -59,6 +59,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
     private int examTotalQuestions = 25;
     private int totalTimeMinutes = 19;
     private FloatingActionButton fabInfo;
+    private LicenseInfoPopup licenseInfoPopup; // Declare LicenseInfoPopup as a member variable
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +70,15 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         toolbar.setTitle("Bài thi");
         boolean isReviewMode = getIntent().getBooleanExtra("is_review_mode", false);
         fabInfo = findViewById(R.id.fab_info);
+        licenseInfoPopup = new LicenseInfoPopup(this); // Initialize the popup here
+
         if (isReviewMode) {
             toolbar.setNavigationIcon(R.drawable.ic_exit); // Set back arrow icon
             toolbar.setNavigationOnClickListener(v -> onBackPressed()); // Handle back button click
+            fabInfo.setVisibility(View.GONE); // Hide fabInfo in review mode
         } else {
             toolbar.setNavigationIcon(null); // No back arrow in quiz mode
+            fabInfo.setVisibility(View.VISIBLE); // Ensure fabInfo is visible in quiz mode
         }
         toolbar.inflateMenu(R.menu.top_app_bar_exam);
         // Initialize views
@@ -145,6 +150,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
                 }
             }
             if(quizMode.equals("top_wquiz")) {
+                fabInfo.setVisibility(View.GONE);
                 questions = questionDAO.getConfusingQuestions(license.getId());
                 ExamSet examSet = new ExamSet("Confusing Exam", questions.size(), 0, false ,licenseId,false);
 
@@ -158,6 +164,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
                 }
             }
             if(quizMode.equals("critical_quiz")) {
+                fabInfo.setVisibility(View.GONE);
                questions = questionDAO.getCriticalQuestions(license.getId());
                 ExamSet examSet = new ExamSet("Critical Exam", questions.size(), 0, false ,licenseId,false);
 
@@ -171,6 +178,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
                 }
             }
             if(quizMode.equals("wquiz_review")) {
+                fabInfo.setVisibility(View.GONE);
                 questions = questionDAO.getQuestionsByStatus("incorrect", license.getId());
                 if(questions.size() > 0){
                     ExamSet examSet = new ExamSet("Wrong Quiz Review Exam", questions.size(), 0, false ,licenseId,false);
@@ -185,6 +193,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
                 }
             }
             if(quizMode.equals("category")) {
+                fabInfo.setVisibility(View.GONE);
                 int categoryId = intent.getIntExtra("categoryId",1);
                 questions = questionDAO.getQuestionsByCategory(categoryId);
                 ExamSet examSet = new ExamSet("Category Exam", questions.size(), 0, false ,licenseId,false);
@@ -279,6 +288,9 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
+        if (licenseInfoPopup != null) {
+            licenseInfoPopup.dismiss(); // Dismiss the popup when quiz is submitted
+        }
         Intent intent = new Intent(this, ResultActivity.class);
         intent.putExtra("total_questions", totalQuestions);
         intent.putExtra("exam_set_id", examSetId);
@@ -357,6 +369,9 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
+        if (licenseInfoPopup != null) {
+            licenseInfoPopup.dismiss(); // Dismiss the popup to prevent window leaks
+        }
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -370,7 +385,6 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
     }
 
     private void showLicenseInfoPopup(DrivingLicense license) {
-        LicenseInfoPopup popup = new LicenseInfoPopup(this);
-        popup.show(license);
+        licenseInfoPopup.show(license); // Use the member variable
     }
 }
