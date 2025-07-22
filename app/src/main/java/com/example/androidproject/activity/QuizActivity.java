@@ -28,6 +28,8 @@ import com.example.androidproject.model.DrivingLicense;
 import com.example.androidproject.model.ExamSet;
 import com.example.androidproject.model.ExamSetQuestion;
 import com.example.androidproject.model.Question;
+import com.example.androidproject.utils.LicenseInfoPopup;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -53,6 +55,12 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
     private String license_code;
     private int licenseId;
     private DrivingLicenseDAO drivingLicenseDAO ;
+    //Default for A1
+    private int examTotalQuestions = 25;
+    private int totalTimeMinutes = 19;
+    private FloatingActionButton fabInfo;
+    private LicenseInfoPopup licenseInfoPopup; // Declare LicenseInfoPopup as a member variable
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,11 +69,16 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         setSupportActionBar(toolbar);
         toolbar.setTitle("Bài thi");
         boolean isReviewMode = getIntent().getBooleanExtra("is_review_mode", false);
+        fabInfo = findViewById(R.id.fab_info);
+        licenseInfoPopup = new LicenseInfoPopup(this); // Initialize the popup here
+
         if (isReviewMode) {
             toolbar.setNavigationIcon(R.drawable.ic_exit); // Set back arrow icon
             toolbar.setNavigationOnClickListener(v -> onBackPressed()); // Handle back button click
+            fabInfo.setVisibility(View.GONE); // Hide fabInfo in review mode
         } else {
             toolbar.setNavigationIcon(null); // No back arrow in quiz mode
+            fabInfo.setVisibility(View.VISIBLE); // Ensure fabInfo is visible in quiz mode
         }
         toolbar.inflateMenu(R.menu.top_app_bar_exam);
         // Initialize views
@@ -82,7 +95,25 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         Intent intent = getIntent();
         int initialPosition = intent.getIntExtra("question_position", -1);
         List<Question> receivedQuestions = intent.getParcelableArrayListExtra("questions");
-
+        SharedPreferences prefs = getSharedPreferences("LicensePrefs", MODE_PRIVATE);
+        license_code = prefs.getString("selectedLicenseCode", "A1");
+        DrivingLicense license = drivingLicenseDAO.getDrivingLicenseByCode(license_code);
+        if(license_code.equals("A1") || license_code.equals("A")) {
+            examTotalQuestions = 25;
+            totalTimeMinutes = 19;
+        } else if( license_code.equals("B")) {
+            totalTimeMinutes = 27;
+            examTotalQuestions = 30;
+        } else if( license_code.equals("C1")){
+            examTotalQuestions = 35;
+            totalTimeMinutes = 22;
+        } else if( license_code.equals("C")){
+            examTotalQuestions = 40;
+            totalTimeMinutes = 22;
+        }else{
+            examTotalQuestions = 45;
+            totalTimeMinutes = 25;
+        }
         if (receivedQuestions != null && !receivedQuestions.isEmpty()) {
             questions = receivedQuestions;
             if (isReviewMode) {
@@ -97,10 +128,6 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
             }
         } else {
             String quizMode = intent.getStringExtra("quiz_mode");
-
-            SharedPreferences prefs = getSharedPreferences("LicensePrefs", MODE_PRIVATE);
-            license_code = prefs.getString("selectedLicenseCode", "A1");
-            DrivingLicense license = drivingLicenseDAO.getDrivingLicenseByCode(license_code);
             licenseId = license.getId();
             if (quizMode == null) {
                 quizMode = "random_exam"; // Default mode
@@ -110,7 +137,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
                 questions = questionDAO.getQuestionsByExamSetId(examSetId);
             }
             if(quizMode.equals("random_exam")) {
-                questions = questionDAO.getRandomQuestions(license.getId());
+                questions = questionDAO.getRandomQuestions(license.getId(),examTotalQuestions);
                 ExamSet examSet = new ExamSet("Random Exam", questions.size(), 0, false ,licenseId,false);
 
                 long newExamSetId = examSetDAO.addExamSet(examSet);
@@ -123,6 +150,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
                 }
             }
             if(quizMode.equals("top_wquiz")) {
+                fabInfo.setVisibility(View.GONE);
                 questions = questionDAO.getConfusingQuestions(license.getId());
                 ExamSet examSet = new ExamSet("Confusing Exam", questions.size(), 0, false ,licenseId,false);
 
@@ -136,6 +164,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
                 }
             }
             if(quizMode.equals("critical_quiz")) {
+                fabInfo.setVisibility(View.GONE);
                questions = questionDAO.getCriticalQuestions(license.getId());
                 ExamSet examSet = new ExamSet("Critical Exam", questions.size(), 0, false ,licenseId,false);
 
@@ -149,6 +178,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
                 }
             }
             if(quizMode.equals("wquiz_review")) {
+                fabInfo.setVisibility(View.GONE);
                 questions = questionDAO.getQuestionsByStatus("incorrect", license.getId());
                 if(questions.size() > 0){
                     ExamSet examSet = new ExamSet("Wrong Quiz Review Exam", questions.size(), 0, false ,licenseId,false);
@@ -163,6 +193,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
                 }
             }
             if(quizMode.equals("category")) {
+                fabInfo.setVisibility(View.GONE);
                 int categoryId = intent.getIntExtra("categoryId",1);
                 questions = questionDAO.getQuestionsByCategory(categoryId);
                 ExamSet examSet = new ExamSet("Category Exam", questions.size(), 0, false ,licenseId,false);
@@ -210,8 +241,7 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
             tvTimer.setVisibility(View.GONE);
             btnSubmitQuiz.setVisibility(View.GONE);
         } else {
-            // Set up timer (e.g., 20 minutes = 1800000 * 2 / 3 ms)
-            countDownTimer = new CountDownTimer(1800000 * 2 / 3, 1000) {
+            countDownTimer = new CountDownTimer(totalTimeMinutes * 60 * 1000, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
                     int minutes = (int) (millisUntilFinished / 1000) / 60;
@@ -248,11 +278,18 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
             }
             return false;
         });
+
+        fabInfo.setOnClickListener(v -> {
+            showLicenseInfoPopup(license);
+        });
     }
 
     private void submitQuiz() {
         if (countDownTimer != null) {
             countDownTimer.cancel();
+        }
+        if (licenseInfoPopup != null) {
+            licenseInfoPopup.dismiss(); // Dismiss the popup when quiz is submitted
         }
         Intent intent = new Intent(this, ResultActivity.class);
         intent.putExtra("total_questions", totalQuestions);
@@ -332,6 +369,9 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
+        if (licenseInfoPopup != null) {
+            licenseInfoPopup.dismiss(); // Dismiss the popup to prevent window leaks
+        }
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -342,5 +382,9 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
     @Override
     public void onQuestionSelected(int position) {
         viewPager.setCurrentItem(position, true); // Smooth scroll to the selected question
+    }
+
+    private void showLicenseInfoPopup(DrivingLicense license) {
+        licenseInfoPopup.show(license); // Use the member variable
     }
 }

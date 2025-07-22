@@ -2,6 +2,7 @@ package com.example.androidproject.activity;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,6 +41,8 @@ public class ResultActivity extends BaseActivity {
     private QuestionDAO questionDAO;
     private List<Question> questions;
     private List<String> questionStatuses;
+    // Define pass point A1
+    private int passPoint =21;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +59,21 @@ public class ResultActivity extends BaseActivity {
         toolbar.setNavigationIcon(null); // ←
 
         toolbar.inflateMenu(R.menu.top_app_bar_menu); // menu góc phải
-
+        SharedPreferences prefs = getSharedPreferences("LicensePrefs", MODE_PRIVATE);
+        String licenseCode = prefs.getString("selectedLicenseCode", "A1");
+        if(licenseCode.equals("A1")) {
+            passPoint = 21;
+        }else if(licenseCode.equals("A")) {
+            passPoint = 23;
+        }else if(licenseCode.equals("B")) {
+            passPoint = 27;
+        }else if(licenseCode.equals("C1")) {
+            passPoint = 32;
+        }else if(licenseCode.equals("C")){
+            passPoint = 37;
+        }else{
+            passPoint = 42;
+        }
         // Initialize views
         resultTitleTextView = findViewById(R.id.resultTitleTextView);
         resultMessageTextView = findViewById(R.id.resultMessageTextView);
@@ -100,7 +117,7 @@ public class ResultActivity extends BaseActivity {
         String resultMessage;
         if (failedCriticalQuiz) {
             resultMessage = "KHÔNG ĐẠT: SAI CÂU ĐIỂM LIỆT!";
-        } else if (correctAnswers > 20) {
+        } else if (correctAnswers > passPoint) {
             resultMessage = "Bạn đã đạt";
         } else {
             resultMessage = "KHÔNG ĐẠT: CHƯA ĐỦ SỐ ĐIỂM";

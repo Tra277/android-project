@@ -7,45 +7,54 @@
     android:padding="16dp"
     tools:context=".activity.fragment.QuestionFragment">
 
-    <!-- Question Content -->
-    <TextView
-        android:id="@+id/tv_question_content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:textSize="16sp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Sample Question" />
-
-    <!-- Image (if available) -->
-    <ImageView
-        android:id="@+id/iv_question_image"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:contentDescription="Question Image"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/tv_question_content" />
-
-    <!-- Answers Container -->
-    <FrameLayout
-        android:id="@+id/ll_answers_container"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/iv_question_image"
-        tools:layout_editor_absoluteX="16dp" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <!-- Explanation TextView -->
-    <TextView
-        android:id="@+id/tv_explanation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:textSize="14sp"
-        android:textStyle="italic"
-        android:textColor="@android:color/darker_gray"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/ll_answers_container"
-        tools:text="Explanation: This is the explanation for the question." />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Question Content -->
+            <TextView
+                android:id="@+id/tv_question_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:textSize="16sp"
+                tools:text="Sample Question" />
+
+            <!-- Image (if available) -->
+            <ImageView
+                android:id="@+id/iv_question_image"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:contentDescription="Question Image"
+                android:visibility="gone" />
+
+            <!-- Answers Container -->
+            <FrameLayout
+                android:id="@+id/ll_answers_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp" />
+
+            <!-- Explanation TextView -->
+            <TextView
+                android:id="@+id/tv_explanation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:textSize="14sp"
+                android:textStyle="italic"
+                android:textColor="@android:color/darker_gray"
+                android:visibility="gone"
+                tools:text="Explanation: This is the explanation for the question." />
+
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

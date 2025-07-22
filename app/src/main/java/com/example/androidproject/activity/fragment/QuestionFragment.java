@@ -15,6 +15,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.webkit.URLUtil;
 
 import androidx.fragment.app.Fragment;
 
@@ -90,17 +91,25 @@ public class QuestionFragment extends Fragment {
             Log.e("QuestionContent", "Question content is empty or null");
         }
 
-        // Load question image if path exists
-        if (question != null && !question.getImagePath().isEmpty()) {
+        // Load question image
+        if (question != null && question.getImagePath() != null && !question.getImagePath().isEmpty()) {
             ivQuestionImage.setVisibility(View.VISIBLE);
             try {
-                Glide.with(this)
-                        .load(getImageResource(question.getImagePath()))
-                        .into(ivQuestionImage);
+                if (URLUtil.isValidUrl(question.getImagePath())) {
+                    Glide.with(this)
+                            .load(question.getImagePath())
+                            .into(ivQuestionImage);
+                } else {
+                    Glide.with(this)
+                            .load(getImageResource(question.getImagePath()))
+                            .into(ivQuestionImage);
+                }
             } catch (Exception e) {
                 ivQuestionImage.setVisibility(View.GONE);
                 Log.e("QuestionFragment", "Error loading question image: ", e);
             }
+        } else {
+            ivQuestionImage.setVisibility(View.GONE); // Hide the ImageView if imagePath is null or empty
         }
 
         // Clear any existing views in the container
@@ -118,12 +127,18 @@ public class QuestionFragment extends Fragment {
             radioButton.setTag(answer.getId());
             rgAnswers.addView(radioButton);
 
-            if (!answer.getImagePath().isEmpty()) {
+            if (answer.getImagePath() != null && !answer.getImagePath().isEmpty()) {
                 ImageView iv = new ImageView(requireContext());
                 try {
-                    Glide.with(this)
-                            .load(getImageResource(answer.getImagePath()))
-                            .into(iv);
+                    if (URLUtil.isValidUrl(answer.getImagePath())) {
+                        Glide.with(this)
+                                .load(answer.getImagePath())
+                                .into(iv);
+                    } else {
+                        Glide.with(this)
+                                .load(getImageResource(answer.getImagePath()))
+                                .into(iv);
+                    }
                     rgAnswers.addView(iv);
                 } catch (Exception e) {
                     Log.e("QuestionFragment", "Error loading answer image: ", e);
