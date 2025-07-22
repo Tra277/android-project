@@ -98,7 +98,7 @@ public class LicenseActivity extends BaseActivity {
 
         // Restore the selected item
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String savedCode = prefs.getString(KEY_SELECTED_LICENSE_CODE, null);
+        String savedCode = prefs.getString(KEY_SELECTED_LICENSE_CODE, "A1");
         if (savedCode != null && adapter != null) {
             int position = adapter.findPositionByCode(savedCode);
             if (position != -1) {

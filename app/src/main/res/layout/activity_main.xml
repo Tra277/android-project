@@ -108,13 +108,47 @@
                     style="@style/CustomButton.Purple"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Học Biển Báo Giao Thông "
+                    android:text="Biển báo"
                     app:icon="@drawable/ic_traffic_sign"
                     app:iconGravity="top"
                     app:iconPadding="8dp"
                     app:iconSize="50dp"
                     app:iconTint="@color/white" />
+
             </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_quick_tips"
+                    style="@style/CustomButton.Purple"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📌 Mẹo thi nhanh"
+                    app:icon="@drawable/tip_icon"
+                app:iconGravity="top"
+                app:iconPadding="8dp"
+                app:iconSize="50dp"
+                app:iconTint="@color/white" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTopWQuiz"
+                    style="@style/CustomButton.DarkBlue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Câu dễ bị sai"
+                    app:icon="@drawable/wrong_icon"
+                    app:iconGravity="top"
+                    app:iconPadding="8dp"
+                    app:iconSize="50dp"
+                    app:iconTint="@color/white" />
+
+            </TableRow>
+
+
 
         </TableLayout>
     </LinearLayout>

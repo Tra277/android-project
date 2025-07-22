@@ -18,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import com.example.androidproject.R;
 import com.example.androidproject.dao.DrivingLicenseDAO;
 import com.example.androidproject.db.DatabaseHelper;
+import com.google.android.material.button.MaterialButton;
 import com.example.androidproject.model.DrivingLicense;
 
 public class MainActivity extends BaseActivity {
@@ -38,13 +39,22 @@ public class MainActivity extends BaseActivity {
         DrivingLicense license = drivingLicenseDAO.getDrivingLicenseByCode(licenseCode);
         //dbHelper.populateInitialData();
         setSupportActionBar(toolbar);
-        toolbar.setTitle(license.getDescription());
+        if(license != null) {
+            toolbar.setTitle(license.getDescription());
+        }
         toolbar.setNavigationIcon(null); // ←
         toolbar.inflateMenu(R.menu.top_app_bar_menu); // menu góc phải
+
+        MaterialButton quickTipsBtn = findViewById(R.id.btn_quick_tips);
+        quickTipsBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, QuickTipsActivity.class);
+            startActivity(intent);
+        });
+
         btnRandomExam = findViewById(R.id.btnRandomExam);
         btnExamSet = findViewById(R.id.btnExamSet);
         btnCriticalQuiz = findViewById(R.id.btnCriticalQuiz);
-        //btnTopWQuiz = findViewById(R.id.btnTopWQuiz);
+        btnTopWQuiz = findViewById(R.id.btnTopWQuiz);
         btnWQuizReview = findViewById(R.id.btnWQuizReview);
         btnQuizPractice = findViewById(R.id.btnQuizPractice);
         btnTrafficSigns = findViewById(R.id.btnTrafficSigns);
@@ -75,16 +85,17 @@ public class MainActivity extends BaseActivity {
             intent.putExtra("quiz_mode", "critical_quiz");
             startActivity(intent);
         });
-//        btnTopWQuiz.setOnClickListener(v -> {
-//            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
-//            intent.putExtra("quiz_mode", "top_wquiz");
-//            startActivity(intent);
-//        });
+        btnTopWQuiz.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, QuizActivity.class);
+            intent.putExtra("quiz_mode", "top_wquiz");
+            startActivity(intent);
+        });
         btnWQuizReview.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, QuizActivity.class);
             intent.putExtra("quiz_mode", "wquiz_review");
             startActivity(intent);
         });
+
         btnQuizPractice.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ExamCategoryActivity.class);
             startActivity(intent);

@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -36,7 +38,7 @@
             android:name=".service.TestService"
             android:enabled="true"
             android:exported="true" />
-
+        <activity android:name=".activity.QuickTipsActivity" />
         <activity
             android:name=".activity.MainActivity"
             android:exported="true">
@@ -52,4 +54,3 @@
     </application>
 
 </manifest>
-
