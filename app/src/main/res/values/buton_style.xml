@@ -40,6 +40,13 @@
 
     <!-- Purple button -->
     <style name="CustomButton.Purple" parent="CustomButton.Base">
-        <item name="android:backgroundTint">#9C27B0</item>
+        <item name="android:backgroundTint">#9027B0</item>
+    </style>
+
+    <style name="CustomButton.DeepGreen" parent="CustomButton.Base">
+        <item name="android:backgroundTint">#5E936C</item>
+    </style>
+    <style name="CustomButton.DarkBlue" parent="CustomButton.Base">
+        <item name="android:backgroundTint">#465C88</item>
     </style>
 </resources>
