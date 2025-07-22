@@ -25,4 +25,14 @@
         android:layout_marginTop="?attr/actionBarSize"
         />
 
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabChat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/chatbot_button_desc"
+        android:src="@drawable/ic_hint" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

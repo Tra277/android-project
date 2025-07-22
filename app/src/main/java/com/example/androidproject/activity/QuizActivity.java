@@ -19,11 +19,13 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.androidproject.OnAnswerSubmittedListener;
 import com.example.androidproject.R;
 import com.example.androidproject.activity.fragment.QuestionBottomSheetFragment;
+import com.example.androidproject.fragment.ChatBottomSheetFragment;
 import com.example.androidproject.adapter.QuestionPagerAdapter;
 import com.example.androidproject.dao.DrivingLicenseDAO;
 import com.example.androidproject.dao.ExamSetDAO;
 import com.example.androidproject.dao.ExamSetQuestionDAO;
 import com.example.androidproject.dao.QuestionDAO;
+import com.example.androidproject.dao.AnswerDAO;
 import com.example.androidproject.model.DrivingLicense;
 import com.example.androidproject.model.ExamSet;
 import com.example.androidproject.model.ExamSetQuestion;
@@ -265,6 +267,25 @@ public class QuizActivity extends BaseActivity implements OnAnswerSubmittedListe
                         })
                         .setNegativeButton("Hủy", null)
                         .show();
+            });
+        }
+
+        com.google.android.material.floatingactionbutton.FloatingActionButton fabChat = findViewById(R.id.fabChat);
+        if (fabChat != null) {
+            AnswerDAO answerDAOtemp = new AnswerDAO(this);
+            fabChat.setOnClickListener(v -> {
+                int position = viewPager.getCurrentItem();
+                Question q = questions.get(position);
+                String text = q.getContent();
+                List<com.example.androidproject.model.Answer> ansList = answerDAOtemp.getAnswersByQuestionId(q.getId());
+                StringBuilder ansBuilder = new StringBuilder();
+                char label = 'A';
+                for (com.example.androidproject.model.Answer a : ansList) {
+                    ansBuilder.append(label).append(") ").append(a.getContent()).append("; ");
+                    label++;
+                }
+                ChatBottomSheetFragment f = ChatBottomSheetFragment.newInstance(text, ansBuilder.toString());
+                f.show(getSupportFragmentManager(), "chatbot");
             });
         }
 

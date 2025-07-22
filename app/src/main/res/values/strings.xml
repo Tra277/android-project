@@ -2,4 +2,8 @@
     <string name="app_name">AndroidProject</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="chatbot_hint">Ask me anything about driving...</string>
+    <string name="chatbot_typing">Driving instructor is typing…</string>
+    <string name="send">Send</string>
+    <string name="chatbot_button_desc">Open driving chatbot</string>
 </resources>
